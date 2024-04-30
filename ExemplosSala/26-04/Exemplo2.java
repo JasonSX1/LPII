@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Queue;
 import java.util.LinkedList;
@@ -30,6 +29,7 @@ public class Exemplo2{
                     break;
             }
         } while (!resp.equals("f"));
+        scanner.close();
     }
 }
 
