@@ -6,12 +6,20 @@ public class Produto {
     private double preco;
     private int qtdVendas;
     
-    public Produto(String nome, String undMedida, int estoqueInicial, double preco, int qtdVendas){
+
+    public Produto(String nome, String undMedida, int estoqueInicial, double preco){
+
+        if (estoqueInicial < 0){
+            throw new RuntimeException("O estoque inicial deve ser maior que 0.");
+        }
+        else if(preco < 0) {
+            throw new RuntimeException("O preço inicial deve ser maior que 0.");
+        } 
         this.nome = nome;
         this.undMedida = undMedida;
         this.estoqueInicial = estoqueInicial;
         this.preco = preco;
-        this.qtdVendas = qtdVendas;   
+        this.qtdVendas = 0;
     }
 
     public String getNome(){
