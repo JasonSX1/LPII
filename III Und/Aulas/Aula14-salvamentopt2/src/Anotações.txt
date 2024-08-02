@@ -1,0 +1,11 @@
+26/07/24
+
+Vai cair serialização?
+
+Os metodos de serialização são:
+
+Classe ObjectInputStream - Método: Object readObject()
+Classe ObjectOutputStream - Método: void writeObject(Object obj)
+
+//Devemos criar dois fluxos de arquivos, um que recebe o nome do arquivo que será salvo, e criamos um outro fluxo para que possamos manipular os arquivos 
+em tempo de execução, o segundo arquivo recebe como parametro o primeiro
