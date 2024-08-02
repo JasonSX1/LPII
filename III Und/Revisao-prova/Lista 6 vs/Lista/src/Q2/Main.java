@@ -1,14 +1,14 @@
 package Q2;
 //Tem que ler os dados do numeros.txt e calcular a média deles
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.io.FileReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String caminhoArquivo = "src/Q1/numeros.txt";
+        String caminhoArquivo = "lista 6 vs/lista/src/Q2/numeros.txt";
         int soma = 0, cont = 0;
         int index = 0;
 
@@ -17,14 +17,22 @@ public class Main {
             Scanner scanner = new Scanner(fileReader);
             Scanner input = new Scanner(System.in);
 
-            System.out.println("Quantos números do arquivo você deseja ler? ");
-            index = input.nextInt();
+            try{
+                System.out.println("Quantos números do arquivo você deseja ler? ");
+                index = input.nextInt();
+    
+                while(cont<index){
+                    soma += Integer.parseInt(scanner.nextLine());
+                    cont++;
+                }
 
-            while(cont<index){
-                soma += Integer.parseInt(scanner.nextLine());
-                cont++;
+            } catch(NoSuchElementException e){
+                System.out.println("Linhas insuficientes!");
             }
+
+
             scanner.close();
+            input.close();
             fileReader.close();
         } catch(IOException e){
             throw new RuntimeException(e);
