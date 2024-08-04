@@ -1,70 +1,95 @@
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Sessao implements Serializable {
-    private Filme filme;
-    private Sala sala;
-    private LocalDateTime horario;
-    private boolean em3D;
-    private double valorEntrada;
-    private int ingressosVendidos;
-    
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final long serialVersionUID = 1L;
 
-    public Sessao(Filme filme, Sala sala, String horario, boolean em3D, double valorEntrada) {
-        this.filme = filme;
+    private List<Filme> filmes;
+    private List<LocalTime> horarios;
+    private Sala sala;
+    private String tipoAudio;
+    private boolean em3D;
+    private double valorEntradaBase;
+    private int ingressosVendidos;
+
+    public Sessao(Sala sala, String tipoAudio, boolean em3D, double valorEntradaBase) {
+        this.filmes = new ArrayList<>();
+        this.horarios = new ArrayList<>();
         this.sala = sala;
-        this.horario = LocalDateTime.parse(horario, FORMATTER);
+        this.tipoAudio = tipoAudio;
         this.em3D = em3D;
-        this.valorEntrada = valorEntrada;
+        this.valorEntradaBase = valorEntradaBase;
         this.ingressosVendidos = 0;
     }
 
-    public Filme getFilme() {
-        return filme;
+    public List<Filme> getFilmes() {
+        return filmes;
+    }
+
+    public List<LocalTime> getHorarios() {
+        return horarios;
     }
 
     public Sala getSala() {
         return sala;
     }
 
-    public LocalDateTime getHorario() {
-        return horario;
+    public String getTipoAudio() {
+        return tipoAudio;
     }
 
     public boolean isEm3D() {
         return em3D;
     }
 
-    public double getValorEntrada() {
-        return valorEntrada;
+    public double getValorEntradaBase() {
+        return valorEntradaBase;
     }
 
     public int getIngressosVendidos() {
         return ingressosVendidos;
     }
 
-    public void setIngressosVendidos(int ingressosVendidos) {
-        this.ingressosVendidos = ingressosVendidos;
+    public boolean adicionarFilme(Filme filme, LocalTime horario) {
+        if (sala.adicionarHorario(horario)) {
+            this.filmes.add(filme);
+            this.horarios.add(horario);
+            return true;
+        }
+        return false;
     }
 
-    public int getDuracao() {
-        return filme.getDuracao();
+    public void venderIngresso(Filme filme, boolean meiaEntrada) {
+        double valorEntrada = valorEntradaBase;
+        if (em3D) {
+            valorEntrada *= 1.25;
+        }
+        if (meiaEntrada) {
+            valorEntrada *= 0.5;
+        }
+        this.ingressosVendidos++;
+        // Lógica para registrar venda (por exemplo, salvar em banco de dados)
     }
 
-    public String getTipoProducao() {
-        return filme.getTipoProducao();
-    }
-
-    public String getTipoAudio() {
-        return filme.getTipoAudio();
+    public void cancelarIngresso(Filme filme, LocalTime horario) {
+        if (ingressosVendidos > 0) {
+            this.ingressosVendidos--;
+            sala.removerHorario(horario);
+            // Lógica para cancelar venda (por exemplo, atualizar banco de dados)
+        }
     }
 
     @Override
     public String toString() {
-        return String.format("Filme: %s, Sala: %d, Horário: %s, 3D: %s, Valor: R$ %.2f, Ingressos Vendidos: %d",
-                filme.getTitulo(), sala.getNumero(), horario.format(FORMATTER), em3D ? "Sim" : "Não",
-                valorEntrada, ingressosVendidos);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < filmes.size(); i++) {
+            sb.append(String.format("Filme: %s, Horário: %s\n", filmes.get(i).getTitulo(), horarios.get(i).format(formatter)));
+        }
+        return sb.toString() + String.format("Sala: %s, Tipo de Áudio: %s, 3D: %s, Valor Entrada Base: R$ %.2f, Ingressos Vendidos: %d", 
+                sala.getNome(), tipoAudio, em3D ? "Sim" : "Não", valorEntradaBase, ingressosVendidos);
     }
 }

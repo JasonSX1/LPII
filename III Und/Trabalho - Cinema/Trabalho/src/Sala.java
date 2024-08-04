@@ -1,6 +1,9 @@
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Sala implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -10,11 +13,13 @@ public class Sala implements Serializable {
     private final int numero;
     private final String nome;
     private final int capacidade;
+    private final Set<LocalTime> horarios; // Lista de horários para verificar intervalos
 
     private Sala(int numero, String nome, int capacidade) {
         this.numero = numero;
         this.nome = nome;
         this.capacidade = capacidade;
+        this.horarios = new HashSet<>();
     }
 
     public static Sala criarSala(int numero, String nome, int capacidade) {
@@ -38,9 +43,27 @@ public class Sala implements Serializable {
     public int getCapacidade() {
         return capacidade;
     }
+    
+    public Set<LocalTime> getHorarios() {
+        return horarios;
+    }
 
     public static Sala getSala(int numero) {
         return salas.get(numero);
+    }
+
+    public boolean adicionarHorario(LocalTime horario) {
+        for (LocalTime h : horarios) {
+            if (Math.abs(h.toSecondOfDay() - horario.toSecondOfDay()) < 1200) { // 1200 segundos = 20 minutos
+                return false; // Intervalo menor que 20 minutos
+            }
+        }
+        horarios.add(horario);
+        return true;
+    }
+
+    public void removerHorario(LocalTime horario) {
+        horarios.remove(horario);
     }
 
     @Override
