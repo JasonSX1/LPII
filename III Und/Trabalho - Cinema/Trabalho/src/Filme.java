@@ -1,10 +1,12 @@
 import java.io.Serializable;
+import java.util.Set;
 
 public class Filme implements Serializable {
     private final String titulo;
     private final int duracao; // duração em minutos
     private final String tipoProducao;
     private final String tipoAudio;
+    private Set<LocalTime> 
 
     public Filme(String titulo, int duracao, String tipoProducao, String tipoAudio) {
         this.titulo = titulo;

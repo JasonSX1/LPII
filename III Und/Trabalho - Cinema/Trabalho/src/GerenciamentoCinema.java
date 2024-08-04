@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class GerenciamentoCinema {
     private Cinema cinema;
@@ -200,7 +201,10 @@ private void adicionarSessao() {
         System.out.println("Sessões disponíveis:");
         for (int i = 0; i < sessoesDoFilme.size(); i++) {
             Sessao sessao = sessoesDoFilme.get(i);
-            System.out.println(i + 1 + ". " + sessao.getSala().getHorarios());
+            Set<LocalTime> horarios = sessao.getSala().getHorarios();
+            for(LocalTime horario : horarios) {
+                System.out.println(i + 1 + ". " + horario);
+            }
 
             //Consultar programação
             //
@@ -280,7 +284,9 @@ private void adicionarSessao() {
     private void consultarProgramacao() {
         System.out.println("Programação do cinema:");
         for (Sessao sessao : cinema.getSessoes()) {
-            System.out.println("Filme: " + sessao.getFilmes().get(0).getTitulo() + ", Sala: " + sessao.getSala().getNumero() + ", Horário: " + sessao.getHorario());
+            Set<LocalTime> horarios = sessao.getSala().getHorarios();
+            System.out.println("Filme: " + sessao.getFilmes().get(0).getTitulo() + ", Sala: " + sessao.getSala().getNumero() + ", Horário: " + horarios.next());
+            //tem que imprimir se o filme é 3d pela sessao
         }
     }
 
