@@ -11,22 +11,20 @@ public class Sala implements Serializable {
     private static final Map<Integer, Sala> salas = new HashMap<>();
 
     private final int numero;
-    private final String nome;
     private final int capacidade;
     private final Set<LocalTime> horarios; // Lista de horários para verificar intervalos
 
-    private Sala(int numero, String nome, int capacidade) {
+    private Sala(int numero, int capacidade) {
         this.numero = numero;
-        this.nome = nome;
         this.capacidade = capacidade;
         this.horarios = new HashSet<>();
     }
 
-    public static Sala criarSala(int numero, String nome, int capacidade) {
+    public static Sala criarSala(int numero, int capacidade) {
         if (salas.containsKey(numero)) {
             return salas.get(numero);
         } else {
-            Sala sala = new Sala(numero, nome, capacidade);
+            Sala sala = new Sala(numero, capacidade);
             salas.put(numero, sala);
             return sala;
         }
@@ -36,14 +34,10 @@ public class Sala implements Serializable {
         return numero;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
     public int getCapacidade() {
         return capacidade;
     }
-    
+
     public Set<LocalTime> getHorarios() {
         return horarios;
     }
@@ -68,6 +62,6 @@ public class Sala implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Sala %d: %s (Capacidade: %d)", numero, nome, capacidade);
+        return String.format("Sala %d: %s (Capacidade: %d)", numero, capacidade);
     }
 }

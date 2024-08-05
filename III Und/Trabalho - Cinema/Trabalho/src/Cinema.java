@@ -86,7 +86,7 @@ public class Cinema implements Serializable {
 
     public void removerIngresso(Ingresso ingresso) {
         ingresso.getSessao().cancelarIngresso(ingresso.getFilme(),
-                ingresso.getSessao().getHorarios().get(ingresso.getSessao().getFilmes().indexOf(ingresso.getFilme())));
+                ingresso.getSessao().getHorario());
         // Adicionar lógica de persistência se necessário (ex: banco de dados)
     }
 
@@ -117,10 +117,8 @@ public class Cinema implements Serializable {
 
     public Sessao buscarSessaoPorFilme(String titulo) {
         for (Sessao sessao : sessoes) {
-            for (Filme filme : sessao.getFilmes()) {
-                if (filme.getTitulo().equalsIgnoreCase(titulo)) {
+                if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
                     return sessao;
-                }
             }
         }
         return null;
@@ -133,5 +131,10 @@ public class Cinema implements Serializable {
         }
         return total;
     }
+
+    public List<Ingresso> getIngressos() {
+        return ingressos;
+    }
+
 
 }

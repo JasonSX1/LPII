@@ -7,38 +7,32 @@ import java.util.List;
 public class Sessao implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private List<Filme> filmes;
-    private List<LocalTime> horarios;
+    private Filme filme;
+    private LocalTime horario;
     private Sala sala;
-    private String tipoAudio;
     private boolean em3D;
     private double valorEntradaBase;
     private int ingressosVendidos;
 
-    public Sessao(Sala sala, String tipoAudio, boolean em3D, double valorEntradaBase) {
-        this.filmes = new ArrayList<>();
-        this.horarios = new ArrayList<>();
+    public Sessao(Filme filme, Sala sala, LocalTime horario, boolean em3D, double valorEntradaBase) {
+        this.filme = filme;
+        this.horario = horario;
         this.sala = sala;
-        this.tipoAudio = tipoAudio;
         this.em3D = em3D;
         this.valorEntradaBase = valorEntradaBase;
         this.ingressosVendidos = 0;
     }
 
-    public List<Filme> getFilmes() {
-        return filmes;
+    public Filme getFilme() {
+        return filme ;
     }
 
-    public List<LocalTime> getHorarios() {
-        return horarios;
+    public LocalTime getHorario() {
+        return horario;
     }
 
     public Sala getSala() {
         return sala;
-    }
-
-    public String getTipoAudio() {
-        return tipoAudio;
     }
 
     public boolean isEm3D() {
@@ -51,15 +45,6 @@ public class Sessao implements Serializable {
 
     public int getIngressosVendidos() {
         return ingressosVendidos;
-    }
-
-    public boolean adicionarFilme(Filme filme, LocalTime horario) {
-        if (sala.adicionarHorario(horario)) {
-            this.filmes.add(filme);
-            this.horarios.add(horario);
-            return true;
-        }
-        return false;
     }
 
     public void venderIngresso(Filme filme, boolean meiaEntrada) {
@@ -86,10 +71,8 @@ public class Sessao implements Serializable {
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < filmes.size(); i++) {
-            sb.append(String.format("Filme: %s, Horário: %s\n", filmes.get(i).getTitulo(), horarios.get(i).format(formatter)));
-        }
+        sb.append(String.format("Filme: %s, Horário: %s\n", filme.getTitulo(), horario.format(formatter)));
         return sb.toString() + String.format("Sala: %s, Tipo de Áudio: %s, 3D: %s, Valor Entrada Base: R$ %.2f, Ingressos Vendidos: %d", 
-                sala.getNome(), tipoAudio, em3D ? "Sim" : "Não", valorEntradaBase, ingressosVendidos);
+                sala.getNumero(), em3D ? "Sim" : "Não", valorEntradaBase, ingressosVendidos);
     }
 }
