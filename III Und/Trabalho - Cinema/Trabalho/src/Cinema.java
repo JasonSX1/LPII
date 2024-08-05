@@ -117,10 +117,8 @@ public class Cinema implements Serializable {
 
     public Sessao buscarSessaoPorFilme(String titulo) {
         for (Sessao sessao : sessoes) {
-            for (Filme filme : sessao.getFilmes()) {
-                if (filme.getTitulo().equalsIgnoreCase(titulo)) {
+                if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
                     return sessao;
-                }
             }
         }
         return null;
@@ -137,4 +135,6 @@ public class Cinema implements Serializable {
     public List<Ingresso> getIngressos() {
         return ingressos;
     }
+
+
 }

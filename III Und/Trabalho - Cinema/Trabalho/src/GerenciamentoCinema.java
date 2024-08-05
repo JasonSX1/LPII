@@ -160,9 +160,8 @@ private void adicionarSessao() {
     String em3DStr = scanner.nextLine();
     boolean em3D = em3DStr.equalsIgnoreCase("sim");
 
-    Sessao sessao = new Sessao(sala, horario, em3D, 20.0); // Valor do ingresso base fixo como exemplo
+    Sessao sessao = new Sessao(filme, sala, horario, em3D, 20.0); // Valor do ingresso base fixo como exemplo
     if (sala.adicionarHorario(horario)) {
-        sessao.adicionarFilme(filme);
         cinema.adicionarSessao(sessao);
     } else {
         System.out.println("Não é possível adicionar a sessão. Não há intervalo mínimo de 20 minutos após a sessão anterior.");
@@ -186,10 +185,9 @@ private void adicionarSessao() {
         String titulo = scanner.nextLine();
         List<Sessao> sessoesDoFilme = new ArrayList<>();
         for (Sessao sessao : cinema.getSessoes()) {
-            for (Filme filme : sessao.getFilmes()) {
-                if (filme.getTitulo().equalsIgnoreCase(titulo)) {
+                if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
                     sessoesDoFilme.add(sessao);
-                }
+
             }
         }
 
@@ -226,7 +224,7 @@ private void adicionarSessao() {
         } else {
             System.out.println("Meia entrada? (sim/não):");
             boolean meiaEntrada = scanner.nextLine().equalsIgnoreCase("sim");
-            Ingresso ingresso = new Ingresso(sessaoEscolhida, sessaoEscolhida.getFilmes().get(0), numeroPoltrona, meiaEntrada);
+            Ingresso ingresso = new Ingresso(sessaoEscolhida, sessaoEscolhida.getFilme(), numeroPoltrona, meiaEntrada);
             cinema.adicionarIngresso(ingresso);
             System.out.println("Ingresso vendido com sucesso.");
         }
@@ -284,8 +282,10 @@ private void adicionarSessao() {
     private void consultarProgramacao() {
         System.out.println("Programação do cinema:");
         for (Sessao sessao : cinema.getSessoes()) {
-            Set<LocalTime> horarios = sessao.getSala().getHorarios();
-            System.out.println("Filme: " + sessao.getFilmes().get(0).getTitulo() + ", Sala: " + sessao.getSala().getNumero() + ", Horário: " + horarios.next());
+            if(sessao.isEm3D())
+                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero() + " Horário: " + sessao.getHorario() + " (3D)");
+            else
+                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero() + " Horário: " + sessao.getHorario()+" (2D)");
             //tem que imprimir se o filme é 3d pela sessao
         }
     }

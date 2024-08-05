@@ -6,7 +6,6 @@ public class Filme implements Serializable {
     private final int duracao; // duração em minutos
     private final String tipoProducao;
     private final String tipoAudio;
-    private Set<LocalTime> 
 
     public Filme(String titulo, int duracao, String tipoProducao, String tipoAudio) {
         this.titulo = titulo;
