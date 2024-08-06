@@ -1,10 +1,10 @@
 import java.io.Serializable;
 
 public class Ingresso implements Serializable {
-    private Sessao sessao;
-    private Filme filme;
-    private int numeroPoltrona;
-    private boolean meiaEntrada;
+    private final Sessao sessao;
+    private final Filme filme;
+    private final int numeroPoltrona;
+    private final boolean meiaEntrada;
 
     public Ingresso(Sessao sessao, Filme filme, int numeroPoltrona, boolean meiaEntrada) {
         this.sessao = sessao;

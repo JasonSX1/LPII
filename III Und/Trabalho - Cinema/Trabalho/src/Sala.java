@@ -62,6 +62,6 @@ public class Sala implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Sala %d: %s (Capacidade: %d)", numero, capacidade);
+        return String.format("Sala %d: %s lugares", numero, capacidade);
     }
 }

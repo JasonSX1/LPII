@@ -2,13 +2,15 @@ import java.io.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
 public class GerenciamentoCinema {
     private Cinema cinema;
-    private Scanner scanner;
+    private final Scanner scanner;
+    private final double preco = 20.0;
 
     public GerenciamentoCinema() {
         this.cinema = new Cinema();
@@ -19,7 +21,6 @@ public class GerenciamentoCinema {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("cinema.dat"))) {
             cinema = (Cinema) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -27,7 +28,6 @@ public class GerenciamentoCinema {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("cinema.dat"))) {
             oos.writeObject(cinema);
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -48,41 +48,21 @@ public class GerenciamentoCinema {
             scanner.nextLine();
 
             switch (opcao) {
-                case 1:
-                    cadastrarFilme();
-                    break;
-                case 2:
-                    cadastrarSala();
-                    break;
-                case 3:
-                    adicionarSessao();
-                    break;
-                case 4:
-                    removerSessao();
-                    break;
-                case 5:
-                    venderIngresso();
-                    break;
-                case 6:
-                    cancelarIngresso();
-                    break;
-                case 7:
-                    consultarProgramacao();
-                    break;
-                case 8:
-                    consultarDisponibilidadePoltronas();
-                    break;
-                case 9:
-                    consultarTaxaOcupacao();
-                    break;
-                case 10:
-                    consultarFaturamento();
-                    break;
-                case 11:
+                case 1 -> cadastrarFilme();
+                case 2 -> cadastrarSala();
+                case 3 -> adicionarSessao();
+                case 4 -> removerSessao();
+                case 5 -> venderIngresso();
+                case 6 -> cancelarIngresso();
+                case 7 -> consultarProgramacao();
+                case 8 -> consultarDisponibilidadePoltronas();
+                case 9 -> consultarTaxaOcupacao();
+                case 10 -> consultarFaturamento();
+                case 11 -> {
                     salvarDados();
                     return;
-                default:
-                    System.out.println("Opção inválida.");
+                }
+                default -> System.out.println("Opção inválida.");
             }
         }
     }
@@ -103,20 +83,12 @@ public class GerenciamentoCinema {
         int opcaoAudio = scanner.nextInt();
         scanner.nextLine();
         String tipoAudio;
-        switch(opcaoAudio) {
-            case 1:
-                tipoAudio = "Original";
-                break;
-            case 2:
-                tipoAudio = "Original com legenda";
-                break;
-            case 3:
-                tipoAudio = "Dublado";
-                break;
-            default:
-                tipoAudio = "Original";
-                break;
-        }
+        tipoAudio = switch (opcaoAudio) {
+            case 1 -> "Original";
+            case 2 -> "Original com legenda";
+            case 3 -> "Dublado";
+            default -> "Original";
+        };
 
         Filme filme = new Filme(titulo, duracao, tipoProducao, tipoAudio);
         cinema.adicionarFilme(filme);
@@ -160,7 +132,7 @@ private void adicionarSessao() {
     String em3DStr = scanner.nextLine();
     boolean em3D = em3DStr.equalsIgnoreCase("sim");
 
-    Sessao sessao = new Sessao(filme, sala, horario, em3D, 20.0); // Valor do ingresso base fixo como exemplo
+    Sessao sessao = new Sessao(filme, sala, horario, em3D, preco); // Valor do ingresso base fixo como exemplo
     if (sala.adicionarHorario(horario)) {
         cinema.adicionarSessao(sessao);
     } else {
@@ -230,35 +202,32 @@ private void adicionarSessao() {
         }
     }
 
-    private void imprimirMapaAssentos(Sala sala) {
-        int capacidade = sala.getCapacidade();
-        int sqrt = (int) Math.ceil(Math.sqrt(capacidade));
-        boolean[][] mapaAssentos = new boolean[sqrt][sqrt];
+private void imprimirMapaAssentos(Sala sala) {
+    int capacidade = sala.getCapacidade();
+    int sqrt = (int) Math.ceil(Math.sqrt(capacidade));
+    Set<Integer> assentosOcupados = new HashSet<>();
 
-        for (Ingresso ingresso : cinema.getIngressos()) {
-            if (ingresso.getSessao().getSala().equals(sala)) {
-                int numeroPoltrona = ingresso.getNumeroPoltrona() - 1;
-                int row = numeroPoltrona / sqrt;
-                int col = numeroPoltrona % sqrt;
-                mapaAssentos[row][col] = true;
-            }
-        }
-
-        for (int i = 0; i < sqrt; i++) {
-            for (int j = 0; j < sqrt; j++) {
-                int poltronaNumero = i * sqrt + j + 1;
-                if (poltronaNumero > capacidade) {
-                    break;
-                }
-                if (mapaAssentos[i][j]) {
-                    System.out.print("[X]");
-                } else {
-                    System.out.print("[" + poltronaNumero + "]");
-                }
-            }
-            System.out.println();
+    for (Ingresso ingresso : cinema.getIngressos()) {
+        if (ingresso.getSessao().getSala().equals(sala)) {
+            assentosOcupados.add(ingresso.getNumeroPoltrona());
         }
     }
+
+    for (int i = 0; i < sqrt; i++) {
+        for (int j = 0; j < sqrt; j++) {
+            int poltronaNumero = i * sqrt + j + 1;
+            if (poltronaNumero > capacidade) {
+                System.out.print("    ");  // Adicionando espaços extras para melhor alinhamento
+            } else if (assentosOcupados.contains(poltronaNumero)) {
+                System.out.print("[X]");
+            } else {
+                System.out.printf("[%2d]", poltronaNumero);  // Formatando para alinhar os números
+            }
+        }
+        System.out.println();
+    }
+}
+
 
     private void cancelarIngresso() {
         System.out.println("Título do filme:");

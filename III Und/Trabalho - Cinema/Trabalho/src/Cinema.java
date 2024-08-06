@@ -1,15 +1,17 @@
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Cinema implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private List<Filme> filmes;
-    private List<Sessao> sessoes;
-    private List<Sala> salas;
-    private List<Ingresso> ingressos;
+    private final List<Filme> filmes;
+    private final List<Sessao> sessoes;
+    private final List<Sala> salas;
+    private final List<Ingresso> ingressos;
 
     public Cinema() {
         this.filmes = new ArrayList<>();
@@ -91,13 +93,8 @@ public class Cinema implements Serializable {
     }
 
     public int calcularIngressosVendidos(Sessao sessao) {
-        int count = 0;
-        for (Ingresso ingresso : ingressos) {
-            if (ingresso.getSessao().equals(sessao)) {
-                count++;
-            }
-        }
-        return count;
+        
+        return sessao.getIngressosVendidos();
     }
 
     public double calcularTaxaOcupacao(Sessao sessao) {
@@ -126,9 +123,17 @@ public class Cinema implements Serializable {
 
     public double calcularFaturamento() {
         double total = 0;
-        for (Ingresso ingresso : ingressos) {
-            total += ingresso.calcularPreco();
+        Map<String, Double> ingressosVendidosPorTipo = new HashMap<>();
+        for (Sessao sessao : sessoes) {
+            ingressosVendidosPorTipo = sessao.getIngressosVendidosPorTipo();
         }
+        for(Map.Entry<String, Double> entry : ingressosVendidosPorTipo.entrySet()) {
+            total += entry.getValue();
+            
+            // Your code here
+        }
+            
+        
         return total;
     }
 

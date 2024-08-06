@@ -1,18 +1,21 @@
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class Sessao implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Filme filme;
-    private LocalTime horario;
-    private Sala sala;
-    private boolean em3D;
-    private double valorEntradaBase;
+    private final Filme filme;
+    private final LocalTime horario;
+
+    private final Sala sala;
+    private final boolean em3D;
+    private final double valorEntradaBase;
     private int ingressosVendidos;
+    private final Map<String, Double> ingressosVendidosPorTipo = new HashMap<>();
 
     public Sessao(Filme filme, Sala sala, LocalTime horario, boolean em3D, double valorEntradaBase) {
         this.filme = filme;
@@ -47,13 +50,27 @@ public class Sessao implements Serializable {
         return ingressosVendidos;
     }
 
+    public Map<String, Double> getIngressosVendidosPorTipo() {
+        return ingressosVendidosPorTipo;
+    }
+
     public void venderIngresso(Filme filme, boolean meiaEntrada) {
-        double valorEntrada = valorEntradaBase;
+        Double valorEntrada = valorEntradaBase;
         if (em3D) {
             valorEntrada *= 1.25;
-        }
-        if (meiaEntrada) {
-            valorEntrada *= 0.5;
+            if (meiaEntrada) {
+                valorEntrada *= 0.5;
+                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
+            } else {
+                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
+            }
+        }else{
+            if (meiaEntrada) {
+                valorEntrada *= 0.5;
+                ingressosVendidosPorTipo.put("meia entrada",valorEntrada );
+            } else {
+                ingressosVendidosPorTipo.put("inteira", valorEntrada );
+            }
         }
         this.ingressosVendidos++;
         // Lógica para registrar venda (por exemplo, salvar em banco de dados)
