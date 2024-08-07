@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Cinema implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private List<Filme> filmes = new ArrayList<>();
     private List<Sessao> sessoes = new ArrayList<>();
@@ -58,7 +59,12 @@ public class Cinema implements Serializable {
     }
 
     public Sala buscarSalaPorId(int numeroSala) {
-        return Sala.getSala(numeroSala);
+        for (Sala sala : salas) {
+            if (sala.getNumero() == numeroSala) {
+                return sala;
+            }
+        }
+        return null;
     }
 
     public boolean verificarIntervaloMinimo(Sala sala, LocalTime horario) {

@@ -1,6 +1,7 @@
 import java.io.Serializable;
 
 public class Ingresso implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Sessao sessao;
     private final Filme filme;
     private final int numeroPoltrona;

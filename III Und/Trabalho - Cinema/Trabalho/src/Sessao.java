@@ -3,9 +3,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class Sessao implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private Filme filme;
     private LocalTime horario;
@@ -14,7 +14,6 @@ public class Sessao implements Serializable {
     private double valorEntradaBase;
     private int ingressosVendidos;
     private final Map<String, Double> ingressosVendidosPorTipo = new HashMap<>();
-    Scanner scanner = new Scanner(System.in);
     public Cinema cinema;
 
     public Sessao(Filme filme, Sala sala, LocalTime horario, boolean em3D, double valorEntradaBase, Cinema cinema) {

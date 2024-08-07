@@ -7,13 +7,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class GerenciamentoCinema implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Cinema cinema = new Cinema();
     private transient Scanner scanner;
-
-    public GerenciamentoCinema() {
-        this.cinema = new Cinema();
-        this.scanner = new Scanner(System.in);
-    }
 
     public void carregarDados() {
         File arquivo = new File("cinema.dat");
@@ -23,15 +19,13 @@ public class GerenciamentoCinema implements Serializable {
         }
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
-            // Lê o objeto do tipo GerenciamentoCinema
             GerenciamentoCinema gerenciamentoCinema = (GerenciamentoCinema) ois.readObject();
-            this.cinema = gerenciamentoCinema.cinema;  // Atualiza a variável de instância
+            this.cinema = gerenciamentoCinema.cinema; 
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Erro ao carregar os dados: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
 
     public void salvarDados() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("cinema.dat"))) {
@@ -41,7 +35,12 @@ public class GerenciamentoCinema implements Serializable {
             System.err.println("Erro ao salvar os dados: " + e.getMessage());
             e.printStackTrace();
         }
-}
+    }
+
+    public GerenciamentoCinema() {
+        this.cinema = new Cinema();
+        this.scanner = new Scanner(System.in);
+    }
 
     public void exibirMenu() throws Exception {
         while (true) {
@@ -141,8 +140,8 @@ public class GerenciamentoCinema implements Serializable {
         System.out.println("Capacidade da sala:");
         int capacidade = scanner.nextInt();
         scanner.nextLine();
-
-        Sala sala = Sala.criarSala(numero, capacidade);
+        // Sala sala = Sala.criarSala(numero, capacidade);
+        Sala sala = new Sala(numero, capacidade);
         cinema.adicionarSala(sala);
     }
 
@@ -184,7 +183,8 @@ public class GerenciamentoCinema implements Serializable {
 
         double preco = 20.0; // Definir um preço base, por exemplo
 
-        Sessao sessao = new Sessao(filme, sala, horario, em3D, preco, cinema); // Valor do ingresso base fixo como exemplo
+        Sessao sessao = new Sessao(filme, sala, horario, em3D, preco, cinema); // Valor do ingresso base fixo como
+                                                                               // exemplo
 
         // Verificar se é possível adicionar o horário desejado
         if (sala.adicionarHorario(filme, horario)) {
@@ -193,7 +193,9 @@ public class GerenciamentoCinema implements Serializable {
         } else {
             // Sugerir o próximo horário disponível
             LocalTime proximoHorarioDisponivel = calcularProximoHorarioDisponivel(sala, filme);
-            System.out.printf("Não é possível adicionar a sessão no horário desejado. O próximo horário disponível é %s.%n", proximoHorarioDisponivel);
+            System.out.printf(
+                    "Não é possível adicionar a sessão no horário desejado. O próximo horário disponível é %s.%n",
+                    proximoHorarioDisponivel);
         }
     }
 
@@ -235,7 +237,7 @@ public class GerenciamentoCinema implements Serializable {
             System.out.println("Nenhuma sessão disponível.");
             return;
         }
-    
+
         System.out.println("Sessões disponíveis:");
         for (int i = 0; i < sessoes.size(); i++) {
             Sessao sessao = sessoes.get(i);
@@ -244,16 +246,16 @@ public class GerenciamentoCinema implements Serializable {
             System.out.printf("%d. Filme: %s, Horário: %s, Sala: %d%n",
                     i + 1, filme.getTitulo(), sessao.getHorario(), sala.getNumero());
         }
-    
+
         System.out.println("Escolha uma sessão para remover (número):");
         int escolhaSessao = scanner.nextInt() - 1;
         scanner.nextLine(); // Consome a nova linha
-    
+
         if (escolhaSessao < 0 || escolhaSessao >= sessoes.size()) {
             System.out.println("Escolha inválida.");
             return;
         }
-    
+
         Sessao sessaoParaRemover = sessoes.get(escolhaSessao);
         cinema.removerSessao(sessaoParaRemover);
         System.out.println("Sessão removida com sucesso.");
@@ -353,35 +355,36 @@ public class GerenciamentoCinema implements Serializable {
                 sessoesDoFilme.add(sessao);
             }
         }
-    
+
         if (sessoesDoFilme.isEmpty()) {
             System.out.println("Filme não encontrado.");
             return;
         }
-    
+
         System.out.println("Sessões disponíveis:");
         for (int i = 0; i < sessoesDoFilme.size(); i++) {
             Sessao sessao = sessoesDoFilme.get(i);
             System.out.println((i + 1) + ". " + sessao.getHorario());
         }
-    
+
         System.out.println("Escolha uma sessão (número):");
         int escolhaSessao = scanner.nextInt() - 1;
         scanner.nextLine(); // Consome a nova linha
-    
+
         if (escolhaSessao < 0 || escolhaSessao >= sessoesDoFilme.size()) {
             System.out.println("Escolha inválida.");
             return;
         }
-    
+
         Sessao sessaoEscolhida = sessoesDoFilme.get(escolhaSessao);
         imprimirMapaAssentos(sessaoEscolhida.getSala(), sessaoEscolhida);
-    
+
         System.out.println("Número da poltrona:");
         int numeroPoltrona = scanner.nextInt();
         scanner.nextLine(); // Consome a nova linha
         Ingresso ingressoParaCancelar = cinema.buscarIngresso(sessaoEscolhida, numeroPoltrona);
-        sessaoEscolhida.cancelarIngressoSessao(sessaoEscolhida.getFilme(), numeroPoltrona, sessaoEscolhida, ingressoParaCancelar);
+        sessaoEscolhida.cancelarIngressoSessao(sessaoEscolhida.getFilme(), numeroPoltrona, sessaoEscolhida,
+                ingressoParaCancelar);
 
     }
 
@@ -435,7 +438,6 @@ public class GerenciamentoCinema implements Serializable {
         imprimirMapaAssentos(sala, sessaoEscolhida);
     }
 
-
     private void consultarTaxaOcupacao() {
         System.out.println("Título do filme:");
         String titulo = scanner.nextLine();
@@ -475,5 +477,6 @@ public class GerenciamentoCinema implements Serializable {
         GerenciamentoCinema gerenciamento = new GerenciamentoCinema();
         gerenciamento.carregarDados();
         gerenciamento.exibirMenu();
+        gerenciamento.salvarDados();
     }
 }
