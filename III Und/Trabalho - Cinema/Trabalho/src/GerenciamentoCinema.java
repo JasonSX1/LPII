@@ -106,40 +106,40 @@ public class GerenciamentoCinema {
         cinema.adicionarSala(sala);
     }
 
-private void adicionarSessao() {
-    System.out.println("Título do filme:");
-    String titulo = scanner.nextLine();
-    Filme filme = cinema.buscarFilmePorTitulo(titulo);
-    if (filme == null) {
-        System.out.println("Filme não encontrado.");
-        return;
+    private void adicionarSessao() {
+        System.out.println("Título do filme:");
+        String titulo = scanner.nextLine();
+        Filme filme = cinema.buscarFilmePorTitulo(titulo);
+        if (filme == null) {
+            System.out.println("Filme não encontrado.");
+            return;
+        }
+
+        System.out.println("Número da sala:");
+        int numeroSala = scanner.nextInt();
+        scanner.nextLine();
+        Sala sala = cinema.buscarSalaPorId(numeroSala);
+        if (sala == null) {
+            System.out.println("Sala não encontrada.");
+            return;
+        }
+
+        System.out.println("Horário da sessão (HH:MM):");
+        String horarioStr = scanner.nextLine();
+        LocalTime horario = LocalTime.parse(horarioStr, DateTimeFormatter.ofPattern("HH:mm"));
+
+        System.out.println("Reprodução em 3D? (sim/não):");
+        String em3DStr = scanner.nextLine();
+        boolean em3D = em3DStr.equalsIgnoreCase("sim");
+
+        Sessao sessao = new Sessao(filme, sala, horario, em3D, preco); // Valor do ingresso base fixo como exemplo
+        if (sala.adicionarHorario(horario)) {
+            cinema.adicionarSessao(sessao);
+        } else {
+            System.out.println(
+                    "Não é possível adicionar a sessão. Não há intervalo mínimo de 20 minutos após a sessão anterior.");
+        }
     }
-
-    System.out.println("Número da sala:");
-    int numeroSala = scanner.nextInt();
-    scanner.nextLine();
-    Sala sala = cinema.buscarSalaPorId(numeroSala);
-    if (sala == null) {
-        System.out.println("Sala não encontrada.");
-        return;
-    }
-
-    System.out.println("Horário da sessão (HH:MM):");
-    String horarioStr = scanner.nextLine();
-    LocalTime horario = LocalTime.parse(horarioStr, DateTimeFormatter.ofPattern("HH:mm"));
-
-    System.out.println("Reprodução em 3D? (sim/não):");
-    String em3DStr = scanner.nextLine();
-    boolean em3D = em3DStr.equalsIgnoreCase("sim");
-
-    Sessao sessao = new Sessao(filme, sala, horario, em3D, preco); // Valor do ingresso base fixo como exemplo
-    if (sala.adicionarHorario(horario)) {
-        cinema.adicionarSessao(sessao);
-    } else {
-        System.out.println("Não é possível adicionar a sessão. Não há intervalo mínimo de 20 minutos após a sessão anterior.");
-    }
-}
-
 
     private void removerSessao() {
         System.out.println("Título do filme:");
@@ -157,8 +157,8 @@ private void adicionarSessao() {
         String titulo = scanner.nextLine();
         List<Sessao> sessoesDoFilme = new ArrayList<>();
         for (Sessao sessao : cinema.getSessoes()) {
-                if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
-                    sessoesDoFilme.add(sessao);
+            if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
+                sessoesDoFilme.add(sessao);
 
             }
         }
@@ -172,11 +172,11 @@ private void adicionarSessao() {
         for (int i = 0; i < sessoesDoFilme.size(); i++) {
             Sessao sessao = sessoesDoFilme.get(i);
             Set<LocalTime> horarios = sessao.getSala().getHorarios();
-            for(LocalTime horario : horarios) {
+            for (LocalTime horario : horarios) {
                 System.out.println(i + 1 + ". " + horario);
             }
 
-            //Consultar programação
+            // Consultar programação
             //
         }
 
@@ -202,32 +202,31 @@ private void adicionarSessao() {
         }
     }
 
-private void imprimirMapaAssentos(Sala sala) {
-    int capacidade = sala.getCapacidade();
-    int sqrt = (int) Math.ceil(Math.sqrt(capacidade));
-    Set<Integer> assentosOcupados = new HashSet<>();
+    private void imprimirMapaAssentos(Sala sala) {
+        int capacidade = sala.getCapacidade();
+        int sqrt = (int) Math.ceil(Math.sqrt(capacidade));
+        Set<Integer> assentosOcupados = new HashSet<>();
 
-    for (Ingresso ingresso : cinema.getIngressos()) {
-        if (ingresso.getSessao().getSala().equals(sala)) {
-            assentosOcupados.add(ingresso.getNumeroPoltrona());
-        }
-    }
-
-    for (int i = 0; i < sqrt; i++) {
-        for (int j = 0; j < sqrt; j++) {
-            int poltronaNumero = i * sqrt + j + 1;
-            if (poltronaNumero > capacidade) {
-                System.out.print("    ");  // Adicionando espaços extras para melhor alinhamento
-            } else if (assentosOcupados.contains(poltronaNumero)) {
-                System.out.print("[X]");
-            } else {
-                System.out.printf("[%2d]", poltronaNumero);  // Formatando para alinhar os números
+        for (Ingresso ingresso : cinema.getIngressos()) {
+            if (ingresso.getSessao().getSala().equals(sala)) {
+                assentosOcupados.add(ingresso.getNumeroPoltrona());
             }
         }
-        System.out.println();
-    }
-}
 
+        for (int i = 0; i < sqrt; i++) {
+            for (int j = 0; j < sqrt; j++) {
+                int poltronaNumero = i * sqrt + j + 1;
+                if (poltronaNumero > capacidade) {
+                    System.out.print("    "); // Adicionando espaços extras para melhor alinhamento
+                } else if (assentosOcupados.contains(poltronaNumero)) {
+                    System.out.print("[X]");
+                } else {
+                    System.out.printf("[%2d]", poltronaNumero); // Formatando para alinhar os números
+                }
+            }
+            System.out.println();
+        }
+    }
 
     private void cancelarIngresso() {
         System.out.println("Título do filme:");
@@ -251,11 +250,13 @@ private void imprimirMapaAssentos(Sala sala) {
     private void consultarProgramacao() {
         System.out.println("Programação do cinema:");
         for (Sessao sessao : cinema.getSessoes()) {
-            if(sessao.isEm3D())
-                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero() + " Horário: " + sessao.getHorario() + " (3D)");
+            if (sessao.isEm3D())
+                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero()
+                        + " Horário: " + sessao.getHorario() + " (3D)");
             else
-                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero() + " Horário: " + sessao.getHorario()+" (2D)");
-            //tem que imprimir se o filme é 3d pela sessao
+                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero()
+                        + " Horário: " + sessao.getHorario() + " (2D)");
+            // tem que imprimir se o filme é 3d pela sessao
         }
     }
 
@@ -291,11 +292,5 @@ private void imprimirMapaAssentos(Sala sala) {
         System.out.println("Faturamento total:");
         double faturamento = cinema.calcularFaturamento();
         System.out.println("R$ " + faturamento);
-    }
-
-    public static void main(String[] args) {
-        GerenciamentoCinema gerenciamento = new GerenciamentoCinema();
-        gerenciamento.carregarDados();
-        gerenciamento.exibirMenu();
     }
 }
