@@ -340,6 +340,7 @@ public class GerenciamentoCinema {
         }
     
         Sessao sessaoEscolhida = sessoesDoFilme.get(escolhaSessao);
+        imprimirMapaAssentos(sessaoEscolhida.getSala(), sessaoEscolhida);
     
         System.out.println("Número da poltrona:");
         int numeroPoltrona = scanner.nextInt();
