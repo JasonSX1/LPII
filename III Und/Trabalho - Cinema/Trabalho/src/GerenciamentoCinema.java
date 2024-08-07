@@ -230,36 +230,31 @@ public class GerenciamentoCinema implements Serializable {
     }
 
     private void removerSessao() {
-        System.out.println("Título do filme:");
-        String titulo = scanner.nextLine();
-        List<Sessao> sessoesDoFilme = new ArrayList<>();
-        for (Sessao sessao : cinema.getSessoes()) {
-            if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
-                sessoesDoFilme.add(sessao);
-            }
-        }
-
-        if (sessoesDoFilme.isEmpty()) {
-            System.out.println("Filme não encontrado.");
+        List<Sessao> sessoes = cinema.getSessoes();
+        if (sessoes.isEmpty()) {
+            System.out.println("Nenhuma sessão disponível.");
             return;
         }
-
+    
         System.out.println("Sessões disponíveis:");
-        for (int i = 0; i < sessoesDoFilme.size(); i++) {
-            Sessao sessao = sessoesDoFilme.get(i);
-            System.out.println((i + 1) + ". " + sessao.getHorario());
+        for (int i = 0; i < sessoes.size(); i++) {
+            Sessao sessao = sessoes.get(i);
+            Filme filme = sessao.getFilme();
+            Sala sala = sessao.getSala();
+            System.out.printf("%d. Filme: %s, Horário: %s, Sala: %d%n",
+                    i + 1, filme.getTitulo(), sessao.getHorario(), sala.getNumero());
         }
-
+    
         System.out.println("Escolha uma sessão para remover (número):");
         int escolhaSessao = scanner.nextInt() - 1;
         scanner.nextLine(); // Consome a nova linha
-
-        if (escolhaSessao < 0 || escolhaSessao >= sessoesDoFilme.size()) {
+    
+        if (escolhaSessao < 0 || escolhaSessao >= sessoes.size()) {
             System.out.println("Escolha inválida.");
             return;
         }
-
-        Sessao sessaoParaRemover = sessoesDoFilme.get(escolhaSessao);
+    
+        Sessao sessaoParaRemover = sessoes.get(escolhaSessao);
         cinema.removerSessao(sessaoParaRemover);
         System.out.println("Sessão removida com sucesso.");
     }
