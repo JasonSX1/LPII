@@ -1,7 +1,9 @@
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Cinema implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -130,19 +132,66 @@ public class Cinema implements Serializable {
 
     public Sessao buscarSessaoPorFilme(String titulo) {
         for (Sessao sessao : sessoes) {
-                if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
-                    return sessao;
+            if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
+                return sessao;
             }
         }
         return null;
     }
 
-    public double calcularFaturamento() {
-        double total = 0;
-        for (Ingresso ingresso : ingressos) {
-            total += ingresso.calcularPreco();
+    public void calcularFaturamento() {
+        double totalInteira = 0;
+        double totalMeia = 0;
+        double total3D = 0;
+        double total3DMeia = 0;
+        double qtdInteira = 0;
+        double qtdMeia = 0;
+        double qtd3D = 0;
+        double qtd3DMeia = 0;
+
+        for (Sessao sessao : getSessoes()) {
+            Map<String, Double> ingressosVendidosPorTipo = sessao.getIngressosVendidosPorTipo();
+
+            if (ingressosVendidosPorTipo != null) {
+                for (Map.Entry<String, Double> entry : ingressosVendidosPorTipo.entrySet()) {
+                    String tipo = entry.getKey();
+                    double valor = entry.getValue();
+
+                    switch (tipo) {
+                        case "meia entrada":
+                            totalMeia += valor;
+                            qtdMeia += valor/10;
+                            break;
+                        case "inteira":
+                            totalInteira += valor;
+                            qtdInteira += valor / 20;
+                            break;
+                        case "3D":
+                            total3D += valor;
+                            qtd3D += valor / 25;
+                            break;
+                        case "3D meia entrada":
+                            total3DMeia += valor;
+                            qtd3DMeia += valor / 12.5;
+                            break;
+                    }
+                }
+            }
         }
-        return total;
+
+        double total = totalInteira + totalMeia + total3D + total3DMeia;
+        double qtd = qtdInteira + qtdMeia + qtd3D + qtd3DMeia;
+
+        System.out.println("Faturamento Total: R$ " + total);
+        System.out.println("Quantidade de Ingressos Vendidos: " + qtd);
+        System.out.println("Faturamento Inteira: R$ " + totalInteira);
+        System.out.println("Quantidade de Ingressos Inteira: " + qtdInteira);
+        System.out.println("Faturamento Meia Entrada: R$ " + totalMeia);
+        System.out.println("Quantidade de Ingressos Meia Entrada: " + qtdMeia);
+        System.out.println("Faturamento 3D: R$ " + total3D);
+        System.out.println("Quantidade de Ingressos 3D: " + qtd3D);
+        System.out.println("Faturamento 3D Meia Entrada: R$ " + total3DMeia);
+        System.out.println("Quantidade de Ingressos 3D Meia Entrada: " + qtd3DMeia);
     }
 
     public List<Ingresso> getIngressos() {

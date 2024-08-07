@@ -51,22 +51,25 @@ public class Sessao implements Serializable {
         return ingressosVendidos;
     }
 
+    public Map<String, Double> getIngressosVendidosPorTipo() {
+        return ingressosVendidosPorTipo;
+    }
     public void venderIngresso(Filme filme, boolean meiaEntrada) {
         Double valorEntrada = valorEntradaBase;
         if (em3D) {
             valorEntrada *= 1.25;
             if (meiaEntrada) {
                 valorEntrada *= 0.5;
-                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
+                ingressosVendidosPorTipo.merge("3D meia entrada", valorEntrada, Double::sum);
             } else {
-                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
+                ingressosVendidosPorTipo.merge("3D", valorEntrada, Double::sum);
             }
         }else{
             if (meiaEntrada) {
                 valorEntrada *= 0.5;
-                ingressosVendidosPorTipo.put("meia entrada",valorEntrada );
+                ingressosVendidosPorTipo.merge("meia entrada",valorEntrada, Double::sum);
             } else {
-                ingressosVendidosPorTipo.put("inteira", valorEntrada );
+                ingressosVendidosPorTipo.merge("inteira", valorEntrada, Double::sum);
             }
         }
         this.ingressosVendidos++;

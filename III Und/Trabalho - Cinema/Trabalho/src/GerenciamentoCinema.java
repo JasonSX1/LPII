@@ -75,7 +75,7 @@ public class GerenciamentoCinema {
                     consultarTaxaOcupacao();
                     break;
                 case 10:
-                    consultarFaturamento();
+                    cinema.calcularFaturamento();
                     break;
                 case 11:
                     salvarDados();
@@ -331,7 +331,6 @@ public class GerenciamentoCinema {
         }
     }
     
-
     private void consultarProgramacao() {
         System.out.println("Programação do cinema:");
         for (Sessao sessao : cinema.getSessoes()) {
@@ -419,12 +418,6 @@ public class GerenciamentoCinema {
         Sessao sessaoEscolhida = sessoesDoFilme.get(escolhaSessao);
         double taxaOcupacao = cinema.calcularTaxaOcupacao(sessaoEscolhida);
         System.out.println("Taxa de ocupação: " + taxaOcupacao + "%");
-    }
-
-    private void consultarFaturamento() {
-        System.out.println("Faturamento total:");
-        double faturamento = cinema.calcularFaturamento();
-        System.out.println("R$ " + faturamento);
     }
 
     public static void main(String[] args) throws Exception {
