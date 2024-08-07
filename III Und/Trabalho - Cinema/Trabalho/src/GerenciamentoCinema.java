@@ -287,12 +287,18 @@ public class GerenciamentoCinema {
                 } else if (mapaAssentos[i][j]) {
                     System.out.print("[X]");
                 } else {
-                    System.out.print("[" + poltronaNumero + "]");
+                    // Formatar números de poltronas com dois dígitos
+                    if (poltronaNumero < 10) {
+                        System.out.print("[0" + poltronaNumero + "]");
+                    } else {
+                        System.out.print("[" + poltronaNumero + "]");
+                    }
                 }
             }
             System.out.println();
         }
     }
+
 
     private void cancelarIngresso() {
         System.out.println("Título do filme:");
