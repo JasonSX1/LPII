@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class GerenciamentoCinema {
-    private Cinema cinema;
+    private Cinema cinema = new Cinema();
     private Scanner scanner;
 
     public GerenciamentoCinema() {
@@ -165,7 +165,7 @@ public class GerenciamentoCinema {
 
         double preco = 20.0; // Definir um preço base, por exemplo
 
-        Sessao sessao = new Sessao(filme, sala, horario, em3D, preco); // Valor do ingresso base fixo como exemplo
+        Sessao sessao = new Sessao(filme, sala, horario, em3D, preco, cinema); // Valor do ingresso base fixo como exemplo
 
         // Verificar se é possível adicionar o horário desejado
         if (sala.adicionarHorario(filme, horario)) {
@@ -276,11 +276,12 @@ public class GerenciamentoCinema {
         }
     }
 
-    private void imprimirMapaAssentos(Sala sala, Sessao sessao) {
+    void imprimirMapaAssentos(Sala sala, Sessao sessao) {
         int capacidade = sala.getCapacidade();
         int sqrt = (int) Math.ceil(Math.sqrt(capacidade));
         boolean[][] mapaAssentos = new boolean[sqrt][sqrt];
-
+    
+        // Marcar os assentos ocupados
         for (Ingresso ingresso : cinema.getIngressos()) {
             if (ingresso.getSessao().equals(sessao) && ingresso.getSessao().getSala().equals(sala)) {
                 int numeroPoltrona = ingresso.getNumeroPoltrona() - 1;
@@ -289,7 +290,8 @@ public class GerenciamentoCinema {
                 mapaAssentos[row][col] = true;
             }
         }
-
+    
+        // Imprimir o mapa de assentos
         for (int i = 0; i < sqrt; i++) {
             for (int j = 0; j < sqrt; j++) {
                 int poltronaNumero = i * sqrt + j + 1;
@@ -308,7 +310,7 @@ public class GerenciamentoCinema {
             System.out.println();
         }
     }
-
+    
     private void cancelarIngresso() {
         System.out.println("Título do filme:");
         String titulo = scanner.nextLine();
@@ -345,17 +347,11 @@ public class GerenciamentoCinema {
         System.out.println("Número da poltrona:");
         int numeroPoltrona = scanner.nextInt();
         scanner.nextLine(); // Consome a nova linha
-    
         Ingresso ingressoParaCancelar = cinema.buscarIngresso(sessaoEscolhida, numeroPoltrona);
-        if (ingressoParaCancelar != null) {
-            cinema.removerIngresso(ingressoParaCancelar);
-            System.out.println("Ingresso cancelado com sucesso.");
-        } else {
-            System.out.println("Ingresso não encontrado.");
-        }
+        sessaoEscolhida.cancelarIngressoSessao(sessaoEscolhida.getFilme(), numeroPoltrona, sessaoEscolhida, ingressoParaCancelar);
+        
     }
     
-
     private void consultarProgramacao() {
         System.out.println("Programação do cinema:");
         for (Sessao sessao : cinema.getSessoes()) {
