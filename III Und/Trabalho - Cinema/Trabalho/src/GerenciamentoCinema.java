@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class GerenciamentoCinema {
+public class GerenciamentoCinema implements Serializable {
     private Cinema cinema = new Cinema();
     private transient Scanner scanner;
 
@@ -16,26 +16,32 @@ public class GerenciamentoCinema {
     }
 
     public void carregarDados() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/cinemaSave.dat"))) {
-            cinema = (Cinema) ois.readObject();
+        File arquivo = new File("cinema.dat");
+        if (!arquivo.exists()) {
+            System.out.println("Arquivo não encontrado. Criando novo gerenciamento de cinema.");
+            return;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
+            // Lê o objeto do tipo GerenciamentoCinema
+            GerenciamentoCinema gerenciamentoCinema = (GerenciamentoCinema) ois.readObject();
+            this.cinema = gerenciamentoCinema.cinema;  // Atualiza a variável de instância
         } catch (IOException | ClassNotFoundException e) {
-            if(e.getMessage() == null){
-                System.err.println("Não foi encontrado nenhum arquivo de salvamento prévio, seus dados são salvos automáticamente ao encerrar a aplicação corretamente.");
-            } else {
-                System.err.println("Erro ao carregar os dados: " + e.getMessage());
-            }
+            System.err.println("Erro ao carregar os dados: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
+
     public void salvarDados() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/cinemaSave.dat"))) {
-            oos.writeObject(cinema);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("cinema.dat"))) {
+            oos.writeObject(this);
             System.out.println("Dados salvos com sucesso.");
         } catch (IOException e) {
             System.err.println("Erro ao salvar os dados: " + e.getMessage());
             e.printStackTrace();
         }
-    }
+}
 
     public void exibirMenu() throws Exception {
         while (true) {
@@ -398,36 +404,32 @@ public class GerenciamentoCinema {
     }
 
     private void consultarDisponibilidadePoltronas() {
-        System.out.println("Título do filme:");
-        String titulo = scanner.nextLine();
-        List<Sessao> sessoesDoFilme = new ArrayList<>();
-        for (Sessao sessao : cinema.getSessoes()) {
-            if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
-                sessoesDoFilme.add(sessao);
-            }
-        }
-
-        if (sessoesDoFilme.isEmpty()) {
-            System.out.println("Filme não encontrado.");
+        List<Sessao> sessoes = cinema.getSessoes();
+        if (sessoes.isEmpty()) {
+            System.out.println("Nenhuma sessão disponível.");
             return;
         }
 
         System.out.println("Sessões disponíveis:");
-        for (int i = 0; i < sessoesDoFilme.size(); i++) {
-            Sessao sessao = sessoesDoFilme.get(i);
-            System.out.println((i + 1) + ". " + sessao.getHorario());
+        for (int i = 0; i < sessoes.size(); i++) {
+            Sessao sessao = sessoes.get(i);
+            Filme filme = sessao.getFilme();
+            Sala sala = sessao.getSala();
+            int disponibilidade = sala.getCapacidade() - cinema.calcularIngressosVendidos(sessao);
+            System.out.printf("%d. Filme: %s, Horário: %s, Sala: %d, Disponibilidade: %d lugares%n",
+                    i + 1, filme.getTitulo(), sessao.getHorario(), sala.getNumero(), disponibilidade);
         }
 
         System.out.println("Escolha uma sessão (número):");
         int escolhaSessao = scanner.nextInt() - 1;
         scanner.nextLine(); // Consome a nova linha
 
-        if (escolhaSessao < 0 || escolhaSessao >= sessoesDoFilme.size()) {
+        if (escolhaSessao < 0 || escolhaSessao >= sessoes.size()) {
             System.out.println("Escolha inválida.");
             return;
         }
 
-        Sessao sessaoEscolhida = sessoesDoFilme.get(escolhaSessao);
+        Sessao sessaoEscolhida = sessoes.get(escolhaSessao);
         Sala sala = sessaoEscolhida.getSala();
 
         int capacidade = sala.getCapacidade();
@@ -437,6 +439,7 @@ public class GerenciamentoCinema {
 
         imprimirMapaAssentos(sala, sessaoEscolhida);
     }
+
 
     private void consultarTaxaOcupacao() {
         System.out.println("Título do filme:");

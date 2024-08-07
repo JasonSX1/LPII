@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class Sala implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     private static final Map<Integer, Sala> salas = new HashMap<>();
 

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Cinema implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     private List<Filme> filmes = new ArrayList<>();
     private List<Sessao> sessoes = new ArrayList<>();
