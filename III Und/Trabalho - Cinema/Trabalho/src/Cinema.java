@@ -1,17 +1,16 @@
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Cinema implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private final List<Filme> filmes;
-    private final List<Sessao> sessoes;
-    private final List<Sala> salas;
-    private final List<Ingresso> ingressos;
+    private List<Filme> filmes = new ArrayList<>();
+    private List<Sessao> sessoes = new ArrayList<>();
+    private List<Sala> salas = new ArrayList<>();
+    private List<Ingresso> ingressos = new ArrayList<>();
 
     public Cinema() {
         this.filmes = new ArrayList<>();
@@ -97,12 +96,9 @@ public class Cinema implements Serializable {
         }
         return null;
     }
-
+    
     public void removerIngresso(Ingresso ingresso) {
         ingressos.remove(ingresso);
-        ingresso.getSessao().cancelarIngresso(ingresso.getFilme(),
-                ingresso.getSessao().getHorario());
-        // Adicionar lógica de persistência se necessário (ex: banco de dados)
     }
 
     public int calcularIngressosVendidos(Sessao sessao) {

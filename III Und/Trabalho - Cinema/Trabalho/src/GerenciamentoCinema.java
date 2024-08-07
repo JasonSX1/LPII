@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class GerenciamentoCinema {
-    private Cinema cinema;
+    private Cinema cinema = new Cinema();
     private transient Scanner scanner;
 
     public GerenciamentoCinema() {
@@ -178,7 +178,7 @@ public class GerenciamentoCinema {
 
         double preco = 20.0; // Definir um preço base, por exemplo
 
-        Sessao sessao = new Sessao(filme, sala, horario, em3D, preco); // Valor do ingresso base fixo como exemplo
+        Sessao sessao = new Sessao(filme, sala, horario, em3D, preco, cinema); // Valor do ingresso base fixo como exemplo
 
         // Verificar se é possível adicionar o horário desejado
         if (sala.adicionarHorario(filme, horario)) {
@@ -259,14 +259,12 @@ public class GerenciamentoCinema {
     }
 
     private void venderIngresso() throws Exception {
-        // Listar todas as sessões disponíveis
         List<Sessao> sessoes = cinema.getSessoes();
         if (sessoes.isEmpty()) {
             System.out.println("Nenhuma sessão disponível.");
             return;
         }
 
-        // Exibir informações das sessões
         System.out.println("Sessões disponíveis:");
         for (int i = 0; i < sessoes.size(); i++) {
             Sessao sessao = sessoes.get(i);
@@ -279,7 +277,7 @@ public class GerenciamentoCinema {
 
         System.out.println("Escolha uma sessão (número):");
         int escolhaSessao = scanner.nextInt() - 1;
-        scanner.nextLine(); // Consome a nova linha
+        scanner.nextLine();
 
         if (escolhaSessao < 0 || escolhaSessao >= sessoes.size()) {
             System.out.println("Escolha inválida.");
@@ -289,17 +287,14 @@ public class GerenciamentoCinema {
         Sessao sessaoEscolhida = sessoes.get(escolhaSessao);
         Sala sala = sessaoEscolhida.getSala();
 
-        // Verificar disponibilidade de lugares na sessão escolhida
         int disponibilidade = sala.getCapacidade() - sessaoEscolhida.getIngressosVendidos();
         if (disponibilidade <= 0) {
             System.out.println("Não há lugares disponíveis para esta sessão.");
             return;
         }
 
-        // Imprimir o mapa de assentos
         imprimirMapaAssentos(sala, sessaoEscolhida);
 
-        // Escolher uma poltrona
         System.out.println("Escolha uma poltrona (número):");
         int numeroPoltrona = scanner.nextInt();
         scanner.nextLine(); // Consome a nova linha
@@ -314,8 +309,6 @@ public class GerenciamentoCinema {
             System.out.println("Ingresso vendido com sucesso.");
         }
     }
-
-
 
     private void imprimirMapaAssentos(Sala sala, Sessao sessao) {
         int capacidade = sala.getCapacidade();
@@ -386,16 +379,10 @@ public class GerenciamentoCinema {
         System.out.println("Número da poltrona:");
         int numeroPoltrona = scanner.nextInt();
         scanner.nextLine(); // Consome a nova linha
-    
         Ingresso ingressoParaCancelar = cinema.buscarIngresso(sessaoEscolhida, numeroPoltrona);
-        if (ingressoParaCancelar != null) {
-            cinema.removerIngresso(ingressoParaCancelar);
-            System.out.println("Ingresso cancelado com sucesso.");
-        } else {
-            System.out.println("Ingresso não encontrado.");
-        }
+        sessaoEscolhida.cancelarIngressoSessao(sessaoEscolhida.getFilme(), numeroPoltrona, sessaoEscolhida, ingressoParaCancelar);
+
     }
-    
 
     private void consultarProgramacao() {
         System.out.println("Programação do cinema:");
