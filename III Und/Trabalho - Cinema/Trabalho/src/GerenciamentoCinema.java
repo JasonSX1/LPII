@@ -142,7 +142,11 @@ public class GerenciamentoCinema {
         System.out.println("Filme não encontrado.");
         return;
     }
-
+    List<Sala> salas = cinema.getSalas();
+    System.out.println("Salas disponíveis:");
+    for (Sala sala : salas) {
+        System.out.println(sala.getNumero());
+    }
     System.out.println("Número da sala:");
     int numeroSala = scanner.nextInt();
     scanner.nextLine();
@@ -203,119 +207,7 @@ private void removerSessao() {
     System.out.println("Sessão removida com sucesso.");
 }
 
-
-    private void venderIngresso() throws Exception {
-        System.out.println("Título do filme:");
-        String titulo = scanner.nextLine();
-        List<Sessao> sessoesDoFilme = new ArrayList<>();
-        for (Sessao sessao : cinema.getSessoes()) {
-                if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
-                    sessoesDoFilme.add(sessao);
-
-            }
-        }
-
-        if (sessoesDoFilme.isEmpty()) {
-            System.out.println("Filme não encontrado.");
-            return;
-        }
-
-        System.out.println("Sessões disponíveis:");
-        for (int i = 0; i < sessoesDoFilme.size(); i++) {
-            Sessao sessao = sessoesDoFilme.get(i);
-            Set<LocalTime> horarios = sessao.getSala().getHorarios();
-            for(LocalTime horario : horarios) {
-                System.out.println(i + 1 + ". " + horario);
-            }
-
-            //Consultar programação
-            //
-        }
-
-        System.out.println("Escolha uma sessão (número):");
-        int escolhaSessao = scanner.nextInt() - 1;
-        Sessao sessaoEscolhida = sessoesDoFilme.get(escolhaSessao);
-        Sala sala = sessaoEscolhida.getSala();
-
-        imprimirMapaAssentos(sala);
-
-        System.out.println("Escolha uma poltrona (número):");
-        int numeroPoltrona = scanner.nextInt();
-        scanner.nextLine(); // Consome a nova linha
-        Ingresso ingressoExistente = cinema.buscarIngresso(sessaoEscolhida, numeroPoltrona);
-        if (ingressoExistente != null) {
-            System.out.println("Poltrona já ocupada.");
-        } else {
-            System.out.println("Meia entrada? (sim/não):");
-            boolean meiaEntrada = scanner.nextLine().equalsIgnoreCase("sim");
-            Ingresso ingresso = new Ingresso(sessaoEscolhida, sessaoEscolhida.getFilme(), numeroPoltrona, meiaEntrada);
-            cinema.adicionarIngresso(ingresso);
-            System.out.println("Ingresso vendido com sucesso.");
-        }
-    }
-
-    private void imprimirMapaAssentos(Sala sala) {
-        int capacidade = sala.getCapacidade();
-        int sqrt = (int) Math.ceil(Math.sqrt(capacidade));
-        boolean[][] mapaAssentos = new boolean[sqrt][sqrt];
-    
-        for (Ingresso ingresso : cinema.getIngressos()) {
-            if (ingresso.getSessao().getSala().equals(sala)) {
-                int numeroPoltrona = ingresso.getNumeroPoltrona() - 1;
-                int row = numeroPoltrona / sqrt;
-                int col = numeroPoltrona % sqrt;
-                mapaAssentos[row][col] = true;
-            }
-        }
-    
-        for (int i = 0; i < sqrt; i++) {
-            for (int j = 0; j < sqrt; j++) {
-                int poltronaNumero = i * sqrt + j + 1;
-                if (poltronaNumero > capacidade) {
-                    System.out.print("    ");  // Adicionando espaços extras para melhor alinhamento
-                } else if (mapaAssentos[i][j]) {
-                    System.out.print("[X]");
-                } else {
-                    System.out.print("[" + poltronaNumero + "]");
-                }
-            }
-            System.out.println();
-        }
-    }
-    
-    
-    
-    private void cancelarIngresso() {
-        System.out.println("Título do filme:");
-        String titulo = scanner.nextLine();
-        Sessao sessaoParaCancelar = cinema.buscarSessaoPorFilme(titulo);
-        if (sessaoParaCancelar != null) {
-            System.out.println("Número da poltrona:");
-            int numeroPoltrona = scanner.nextInt();
-            scanner.nextLine();
-            Ingresso ingressoParaCancelar = cinema.buscarIngresso(sessaoParaCancelar, numeroPoltrona);
-            if (ingressoParaCancelar != null) {
-                cinema.removerIngresso(ingressoParaCancelar);
-            } else {
-                System.out.println("Ingresso não encontrado.");
-            }
-        } else {
-            System.out.println("Sessão não encontrada.");
-        }
-    }
-
-    private void consultarProgramacao() {
-        System.out.println("Programação do cinema:");
-        for (Sessao sessao : cinema.getSessoes()) {
-            if(sessao.isEm3D())
-                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero() + " Horário: " + sessao.getHorario() + " (3D)");
-            else
-                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero() + " Horário: " + sessao.getHorario()+" (2D)");
-            //tem que imprimir se o filme é 3d pela sessao
-        }
-    }
-
-    private void consultarDisponibilidadePoltronas() {
+private void venderIngresso() throws Exception {
     System.out.println("Título do filme:");
     String titulo = scanner.nextLine();
     List<Sessao> sessoesDoFilme = new ArrayList<>();
@@ -348,14 +240,123 @@ private void removerSessao() {
     Sessao sessaoEscolhida = sessoesDoFilme.get(escolhaSessao);
     Sala sala = sessaoEscolhida.getSala();
 
-    int capacidade = sala.getCapacidade();
-    int vendidos = cinema.calcularIngressosVendidos(sessaoEscolhida);
-    int disponiveis = capacidade - vendidos;
-    System.out.println("Ingressos disponíveis: " + disponiveis);
+    imprimirMapaAssentos(sala, sessaoEscolhida);
 
-    imprimirMapaAssentos(sala);
+    System.out.println("Escolha uma poltrona (número):");
+    int numeroPoltrona = scanner.nextInt();
+    scanner.nextLine(); // Consome a nova linha
+    Ingresso ingressoExistente = cinema.buscarIngresso(sessaoEscolhida, numeroPoltrona);
+    if (ingressoExistente != null) {
+        System.out.println("Poltrona já ocupada.");
+    } else {
+        System.out.println("Meia entrada? (sim/não):");
+        boolean meiaEntrada = scanner.nextLine().equalsIgnoreCase("sim");
+        Ingresso ingresso = new Ingresso(sessaoEscolhida, sessaoEscolhida.getFilme(), numeroPoltrona, meiaEntrada);
+        cinema.adicionarIngresso(ingresso);
+        System.out.println("Ingresso vendido com sucesso.");
+    }
 }
 
+    private void imprimirMapaAssentos(Sala sala, Sessao sessao) {
+        int capacidade = sala.getCapacidade();
+        int sqrt = (int) Math.ceil(Math.sqrt(capacidade));
+        boolean[][] mapaAssentos = new boolean[sqrt][sqrt];
+    
+        for (Ingresso ingresso : cinema.getIngressos()) {
+            if (ingresso.getSessao().equals(sessao) && ingresso.getSessao().getSala().equals(sala)) {
+                int numeroPoltrona = ingresso.getNumeroPoltrona() - 1;
+                int row = numeroPoltrona / sqrt;
+                int col = numeroPoltrona % sqrt;
+                mapaAssentos[row][col] = true;
+            }
+        }
+    
+        for (int i = 0; i < sqrt; i++) {
+            for (int j = 0; j < sqrt; j++) {
+                int poltronaNumero = i * sqrt + j + 1;
+                if (poltronaNumero > capacidade) {
+                    System.out.print("    ");  // Adicionando espaços extras para melhor alinhamento
+                } else if (mapaAssentos[i][j]) {
+                    System.out.print("[X]");
+                } else {
+                    System.out.print("[" + poltronaNumero + "]");
+                }
+            }
+            System.out.println();
+        }
+    } 
+    
+    private void cancelarIngresso() {
+        System.out.println("Título do filme:");
+        String titulo = scanner.nextLine();
+        Sessao sessaoParaCancelar = cinema.buscarSessaoPorFilme(titulo);
+        if (sessaoParaCancelar != null) {
+            System.out.println("Número da poltrona:");
+            int numeroPoltrona = scanner.nextInt();
+            scanner.nextLine();
+            Ingresso ingressoParaCancelar = cinema.buscarIngresso(sessaoParaCancelar, numeroPoltrona);
+            if (ingressoParaCancelar != null) {
+                cinema.removerIngresso(ingressoParaCancelar);
+            } else {
+                System.out.println("Ingresso não encontrado.");
+            }
+        } else {
+            System.out.println("Sessão não encontrada.");
+        }
+    }
+
+    private void consultarProgramacao() {
+        System.out.println("Programação do cinema:");
+        for (Sessao sessao : cinema.getSessoes()) {
+            if(sessao.isEm3D())
+                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero() + " Horário: " + sessao.getHorario() + " (3D)");
+            else
+                System.out.println("Filme: " + sessao.getFilme().getTitulo() + ", Sala: " + sessao.getSala().getNumero() + " Horário: " + sessao.getHorario()+" (2D)");
+            //tem que imprimir se o filme é 3d pela sessao
+        }
+    }
+
+    private void consultarDisponibilidadePoltronas() {
+        System.out.println("Título do filme:");
+        String titulo = scanner.nextLine();
+        List<Sessao> sessoesDoFilme = new ArrayList<>();
+        for (Sessao sessao : cinema.getSessoes()) {
+            if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
+                sessoesDoFilme.add(sessao);
+            }
+        }
+    
+        if (sessoesDoFilme.isEmpty()) {
+            System.out.println("Filme não encontrado.");
+            return;
+        }
+    
+        System.out.println("Sessões disponíveis:");
+        for (int i = 0; i < sessoesDoFilme.size(); i++) {
+            Sessao sessao = sessoesDoFilme.get(i);
+            System.out.println((i + 1) + ". " + sessao.getHorario());
+        }
+    
+        System.out.println("Escolha uma sessão (número):");
+        int escolhaSessao = scanner.nextInt() - 1;
+        scanner.nextLine(); // Consome a nova linha
+    
+        if (escolhaSessao < 0 || escolhaSessao >= sessoesDoFilme.size()) {
+            System.out.println("Escolha inválida.");
+            return;
+        }
+    
+        Sessao sessaoEscolhida = sessoesDoFilme.get(escolhaSessao);
+        Sala sala = sessaoEscolhida.getSala();
+    
+        int capacidade = sala.getCapacidade();
+        int vendidos = cinema.calcularIngressosVendidos(sessaoEscolhida);
+        int disponiveis = capacidade - vendidos;
+        System.out.println("Ingressos disponíveis: " + disponiveis);
+    
+        imprimirMapaAssentos(sala, sessaoEscolhida);
+    }
+    
 
 private void consultarTaxaOcupacao() {
     System.out.println("Título do filme:");
@@ -391,7 +392,6 @@ private void consultarTaxaOcupacao() {
     double taxaOcupacao = cinema.calcularTaxaOcupacao(sessaoEscolhida);
     System.out.println("Taxa de ocupação: " + taxaOcupacao + "%");
 }
-
 
     private void consultarFaturamento() {
         System.out.println("Faturamento total:");
