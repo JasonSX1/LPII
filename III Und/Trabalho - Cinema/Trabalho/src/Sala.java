@@ -46,15 +46,20 @@ public class Sala implements Serializable {
         return salas.get(numero);
     }
 
-    public boolean adicionarHorario(LocalTime horario) {
-        for (LocalTime h : horarios) {
-            if (Math.abs(h.toSecondOfDay() - horario.toSecondOfDay()) < 1200) { // 1200 segundos = 20 minutos
-                return false; // Intervalo menor que 20 minutos
+    public boolean adicionarHorario(Filme filme, LocalTime horario) {
+        for (LocalTime h : this.horarios) {
+            // Calcular o horário de término do filme existente
+            LocalTime fimExistente = h.plusMinutes(filme.getDuracao() + 20); // duração do filme + 20 minutos
+    
+            // Verificar se o novo horário inicia antes do término do filme existente + 20 minutos
+            if (horario.isBefore(fimExistente)) {
+                return false; // Conflito de horário
             }
         }
-        horarios.add(horario);
+        this.horarios.add(horario);
         return true;
     }
+    
 
     public void removerHorario(LocalTime horario) {
         horarios.remove(horario);

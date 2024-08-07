@@ -114,31 +114,50 @@ public class GerenciamentoCinema {
             System.out.println("Filme não encontrado.");
             return;
         }
-
+    
         System.out.println("Número da sala:");
         int numeroSala = scanner.nextInt();
-        scanner.nextLine();
+        scanner.nextLine(); // Consumir a nova linha
         Sala sala = cinema.buscarSalaPorId(numeroSala);
         if (sala == null) {
             System.out.println("Sala não encontrada.");
             return;
         }
-
+    
         System.out.println("Horário da sessão (HH:MM):");
         String horarioStr = scanner.nextLine();
         LocalTime horario = LocalTime.parse(horarioStr, DateTimeFormatter.ofPattern("HH:mm"));
-
+    
         System.out.println("Reprodução em 3D? (sim/não):");
         String em3DStr = scanner.nextLine();
         boolean em3D = em3DStr.equalsIgnoreCase("sim");
-
+    
+        double preco = 20.0; // Definir um preço base, por exemplo
+    
         Sessao sessao = new Sessao(filme, sala, horario, em3D, preco); // Valor do ingresso base fixo como exemplo
-        if (sala.adicionarHorario(horario)) {
+    
+        // Verificar se é possível adicionar o horário desejado
+        if (sala.adicionarHorario(filme, horario)) {
             cinema.adicionarSessao(sessao);
+            System.out.println("Sessão adicionada com sucesso.");
         } else {
-            System.out.println(
-                    "Não é possível adicionar a sessão. Não há intervalo mínimo de 20 minutos após a sessão anterior.");
+            // Sugerir o próximo horário disponível
+            LocalTime proximoHorarioDisponivel = calcularProximoHorarioDisponivel(sala, filme);
+            System.out.printf("Não é possível adicionar a sessão no horário desejado. O próximo horário disponível é %s.%n", proximoHorarioDisponivel);
         }
+    }
+    
+    private LocalTime calcularProximoHorarioDisponivel(Sala sala, Filme filme) {
+        LocalTime proximoHorarioDisponivel = LocalTime.MIN;
+    
+        for (LocalTime h : sala.getHorarios()) {
+            LocalTime fimExistente = h.plusMinutes(filme.getDuracao() + 20); // Duração do filme + 20 minutos
+            if (fimExistente.isAfter(proximoHorarioDisponivel)) {
+                proximoHorarioDisponivel = fimExistente;
+            }
+        }
+    
+        return proximoHorarioDisponivel;
     }
 
     private void removerSessao() {
