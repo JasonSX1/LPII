@@ -1,6 +1,7 @@
 import java.io.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -133,12 +134,13 @@ public class GerenciamentoCinema {
         cinema.adicionarSala(sala);
     }
 
-    private void adicionarSessao() {
+    public void adicionarSessao() {
         List<Filme> filmes = cinema.getFilmes();
         System.out.println("Filmes cadastrados:");
         for (Filme filme : filmes) {
             System.out.println(filme.getTitulo());
         }
+
         System.out.println("Selecione um filme:");
         String titulo = scanner.nextLine();
         Filme filme = cinema.buscarFilmePorTitulo(titulo);
@@ -146,12 +148,14 @@ public class GerenciamentoCinema {
             System.out.println("Filme não encontrado.");
             return;
         }
+
         List<Sala> salas = cinema.getSalas();
         System.out.println("Salas disponíveis:");
         for (Sala sala : salas) {
             System.out.println(sala.getNumero());
         }
-        System.out.println("Selecione uma sala::");
+
+        System.out.println("Selecione uma sala:");
         int numeroSala = scanner.nextInt();
         scanner.nextLine();
         Sala sala = cinema.buscarSalaPorId(numeroSala);
@@ -160,13 +164,11 @@ public class GerenciamentoCinema {
             return;
         }
 
-        System.out.println("Horário da sessão (HH:MM):");
-        String horarioStr = scanner.nextLine();
-        LocalTime horario = LocalTime.parse(horarioStr, DateTimeFormatter.ofPattern("HH:mm"));
+        LocalTime horario = lerHorarioValido();
 
         System.out.println("Reprodução em 3D? (sim/não):");
         String em3DStr = scanner.nextLine();
-        boolean em3D = em3DStr.equalsIgnoreCase("sim")||em3DStr.equalsIgnoreCase("s");
+        boolean em3D = em3DStr.equalsIgnoreCase("sim") || em3DStr.equalsIgnoreCase("s");
 
         double preco = 20.0; // Definir um preço base, por exemplo
 
@@ -181,6 +183,25 @@ public class GerenciamentoCinema {
             LocalTime proximoHorarioDisponivel = calcularProximoHorarioDisponivel(sala, filme);
             System.out.printf("Não é possível adicionar a sessão no horário desejado. O próximo horário disponível é %s.%n", proximoHorarioDisponivel);
         }
+    }
+
+    private LocalTime lerHorarioValido() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime horario = null;
+        boolean horarioValido = false;
+
+        while (!horarioValido) {
+            try {
+                System.out.println("Horário da sessão (HH:MM):");
+                String horarioStr = scanner.nextLine();
+                horario = LocalTime.parse(horarioStr, formatter);
+                horarioValido = true; // Se o parse for bem-sucedido, marca como válido
+            } catch (DateTimeParseException e) {
+                System.out.println("Formato inválido! Insira o horário no formato HH:MM.");
+            }
+        }
+
+        return horario;
     }
 
     private LocalTime calcularProximoHorarioDisponivel(Sala sala, Filme filme) {
