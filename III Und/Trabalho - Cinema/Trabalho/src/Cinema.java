@@ -1,5 +1,4 @@
 import java.io.Serializable;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,14 +66,14 @@ public class Cinema implements Serializable {
         return null;
     }
 
-    public boolean verificarIntervaloMinimo(Sala sala, LocalTime horario) {
-        for (LocalTime h : sala.getHorarios()) {
-            if (Math.abs(h.toSecondOfDay() - horario.toSecondOfDay()) < 1200) { // 1200 segundos = 20 minutos
-                return false;
-            }
-        }
-        return true;
-    }
+    // public boolean verificarIntervaloMinimo(Sala sala, LocalTime horario) {
+    //     for (LocalTime h : sala.getHorarios()) {
+    //         if (Math.abs(h.toSecondOfDay() - horario.toSecondOfDay()) < 1200) { // 1200 segundos = 20 minutos
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // }
 
     public void adicionarIngresso(Ingresso ingresso) throws Exception {
         if (!isPoltronaDisponivel(ingresso.getSessao(), ingresso.getNumeroPoltrona())) {
