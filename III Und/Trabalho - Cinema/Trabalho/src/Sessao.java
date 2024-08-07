@@ -1,8 +1,9 @@
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Sessao implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -13,6 +14,9 @@ public class Sessao implements Serializable {
     private boolean em3D;
     private double valorEntradaBase;
     private int ingressosVendidos;
+    private final Map<String, Double> ingressosVendidosPorTipo = new HashMap<>();
+    Scanner scanner = new Scanner(System.in);
+    public Cinema cinema = new Cinema();	
 
     public Sessao(Filme filme, Sala sala, LocalTime horario, boolean em3D, double valorEntradaBase) {
         this.filme = filme;
@@ -48,22 +52,43 @@ public class Sessao implements Serializable {
     }
 
     public void venderIngresso(Filme filme, boolean meiaEntrada) {
-        double valorEntrada = valorEntradaBase;
+        Double valorEntrada = valorEntradaBase;
         if (em3D) {
             valorEntrada *= 1.25;
-        }
-        if (meiaEntrada) {
-            valorEntrada *= 0.5;
+            if (meiaEntrada) {
+                valorEntrada *= 0.5;
+                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
+            } else {
+                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
+            }
+        }else{
+            if (meiaEntrada) {
+                valorEntrada *= 0.5;
+                ingressosVendidosPorTipo.put("meia entrada",valorEntrada );
+            } else {
+                ingressosVendidosPorTipo.put("inteira", valorEntrada );
+            }
         }
         this.ingressosVendidos++;
         // Lógica para registrar venda (por exemplo, salvar em banco de dados)
     }
 
-    public void cancelarIngresso(Filme filme, LocalTime horario) {
-        if (ingressosVendidos > 0) {
-            this.ingressosVendidos--;
-            sala.removerHorario(horario);
-            // Lógica para cancelar venda (por exemplo, atualizar banco de dados)
+    void cancelarIngresso(Filme filme, LocalTime horario) {
+        System.out.println("Título do filme:");
+        String titulo = scanner.nextLine();
+        Sessao sessaoParaCancelar = cinema.buscarSessaoPorFilme(titulo);
+        if (sessaoParaCancelar != null) {
+            System.out.println("Número da poltrona:");
+            int numeroPoltrona = scanner.nextInt();
+            scanner.nextLine();
+            Ingresso ingressoParaCancelar = cinema.buscarIngresso(sessaoParaCancelar, numeroPoltrona);
+            if (ingressoParaCancelar != null) {
+                cinema.removerIngresso(ingressoParaCancelar);
+            } else {
+                System.out.println("Ingresso não encontrado.");
+            }
+        } else {
+            System.out.println("Sessão não encontrada.");
         }
     }
 

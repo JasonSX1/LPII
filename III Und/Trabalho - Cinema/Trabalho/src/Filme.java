@@ -1,5 +1,4 @@
 import java.io.Serializable;
-import java.util.Set;
 
 public class Filme implements Serializable {
     private final String titulo;
