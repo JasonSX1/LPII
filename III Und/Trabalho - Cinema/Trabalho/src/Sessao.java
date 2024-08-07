@@ -61,16 +61,16 @@ public class Sessao implements Serializable {
             valorEntrada *= 1.25;
             if (meiaEntrada) {
                 valorEntrada *= 0.5;
-                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
+                ingressosVendidosPorTipo.merge("3D meia entrada", valorEntrada, Double::sum);
             } else {
-                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
+                ingressosVendidosPorTipo.merge("3D", valorEntrada, Double::sum);
             }
         }else{
             if (meiaEntrada) {
                 valorEntrada *= 0.5;
-                ingressosVendidosPorTipo.put("meia entrada",valorEntrada );
+                ingressosVendidosPorTipo.merge("meia entrada",valorEntrada, Double::sum );
             } else {
-                ingressosVendidosPorTipo.put("inteira", valorEntrada );
+                ingressosVendidosPorTipo.merge("inteira", valorEntrada, Double::sum );
             }
         }
         this.ingressosVendidos++;
