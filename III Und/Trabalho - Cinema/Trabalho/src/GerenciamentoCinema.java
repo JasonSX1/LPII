@@ -16,11 +16,11 @@ public class GerenciamentoCinema {
     }
 
     public void carregarDados() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("cinemaSave.dat"))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/cinemaSave.dat"))) {
             cinema = (Cinema) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             if(e.getMessage() == null){
-                System.err.println("Não foi enconrado nenhum arquivo de salvamento prévio, seus dados são salvos automáticamente ao encerrar a aplicação corretamente.");
+                System.err.println("Não foi encontrado nenhum arquivo de salvamento prévio, seus dados são salvos automáticamente ao encerrar a aplicação corretamente.");
             } else {
                 System.err.println("Erro ao carregar os dados: " + e.getMessage());
             }
@@ -28,7 +28,7 @@ public class GerenciamentoCinema {
     }
 
     public void salvarDados() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("cinemaSave.dat"))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/cinemaSave.dat"))) {
             oos.writeObject(cinema);
             System.out.println("Dados salvos com sucesso.");
         } catch (IOException e) {
