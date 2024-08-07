@@ -3,19 +3,20 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Scanner;
 
 public class Sessao implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private final Filme filme;
-    private final LocalTime horario;
-
-    private final Sala sala;
-    private final boolean em3D;
-    private final double valorEntradaBase;
+    private Filme filme;
+    private LocalTime horario;
+    private Sala sala;
+    private boolean em3D;
+    private double valorEntradaBase;
     private int ingressosVendidos;
     private final Map<String, Double> ingressosVendidosPorTipo = new HashMap<>();
+    Scanner scanner = new Scanner(System.in);
+    public Cinema cinema = new Cinema();
 
     public Sessao(Filme filme, Sala sala, LocalTime horario, boolean em3D, double valorEntradaBase) {
         this.filme = filme;
@@ -55,7 +56,7 @@ public class Sessao implements Serializable {
     }
 
     public void venderIngresso(Filme filme, boolean meiaEntrada) {
-        Double valorEntrada = valorEntradaBase;
+        double valorEntrada = valorEntradaBase;
         if (em3D) {
             valorEntrada *= 1.25;
             if (meiaEntrada) {
@@ -76,11 +77,22 @@ public class Sessao implements Serializable {
         // Lógica para registrar venda (por exemplo, salvar em banco de dados)
     }
 
-    public void cancelarIngresso(Filme filme, LocalTime horario) {
-        if (ingressosVendidos > 0) {
-            this.ingressosVendidos--;
-            sala.removerHorario(horario);
-            // Lógica para cancelar venda (por exemplo, atualizar banco de dados)
+    void cancelarIngresso(Filme filme, LocalTime horario) {
+        System.out.println("Título do filme:");
+        String titulo = scanner.nextLine();
+        Sessao sessaoParaCancelar = cinema.buscarSessaoPorFilme(titulo);
+        if (sessaoParaCancelar != null) {
+            System.out.println("Número da poltrona:");
+            int numeroPoltrona = scanner.nextInt();
+            scanner.nextLine();
+            Ingresso ingressoParaCancelar = cinema.buscarIngresso(sessaoParaCancelar, numeroPoltrona);
+            if (ingressoParaCancelar != null) {
+                cinema.removerIngresso(ingressoParaCancelar);
+            } else {
+                System.out.println("Ingresso não encontrado.");
+            }
+        } else {
+            System.out.println("Sessão não encontrada.");
         }
     }
 

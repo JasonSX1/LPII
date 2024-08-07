@@ -72,9 +72,21 @@ public class Cinema implements Serializable {
         return true;
     }
 
-    public void adicionarIngresso(Ingresso ingresso) {
+    public void adicionarIngresso(Ingresso ingresso) throws Exception {
+        if (!isPoltronaDisponivel(ingresso.getSessao(), ingresso.getNumeroPoltrona())) {
+            throw new Exception("A poltrona " + ingresso.getNumeroPoltrona() + " já está vendida.");
+        }
         ingresso.getSessao().venderIngresso(ingresso.getFilme(), ingresso.isMeiaEntrada());
-        // Adicionar lógica de persistência se necessário (ex: banco de dados)
+        ingressos.add(ingresso);
+    }
+
+    public boolean isPoltronaDisponivel(Sessao sessao, int numeroPoltrona) {
+        for (Ingresso ingresso : ingressos) {
+            if (ingresso.getSessao().equals(sessao) && ingresso.getNumeroPoltrona() == numeroPoltrona) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Ingresso buscarIngresso(Sessao sessao, int numeroPoltrona) {
@@ -87,6 +99,7 @@ public class Cinema implements Serializable {
     }
 
     public void removerIngresso(Ingresso ingresso) {
+        ingressos.remove(ingresso);
         ingresso.getSessao().cancelarIngresso(ingresso.getFilme(),
                 ingresso.getSessao().getHorario());
         // Adicionar lógica de persistência se necessário (ex: banco de dados)
@@ -140,6 +153,4 @@ public class Cinema implements Serializable {
     public List<Ingresso> getIngressos() {
         return ingressos;
     }
-
-
 }
