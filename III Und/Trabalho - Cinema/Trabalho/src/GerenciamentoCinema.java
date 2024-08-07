@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class GerenciamentoCinema {
     private Cinema cinema;
-    private Scanner scanner;
+    private transient Scanner scanner;
 
     public GerenciamentoCinema() {
         this.cinema = new Cinema();
@@ -16,17 +16,23 @@ public class GerenciamentoCinema {
     }
 
     public void carregarDados() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("cinema.dat"))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("cinemaSave.dat"))) {
             cinema = (Cinema) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            if(e.getMessage() == null){
+                System.err.println("Não foi enconrado nenhum arquivo de salvamento prévio, seus dados são salvos automáticamente ao encerrar a aplicação corretamente.");
+            } else {
+                System.err.println("Erro ao carregar os dados: " + e.getMessage());
+            }
         }
     }
 
     public void salvarDados() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("cinema.dat"))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("cinemaSave.dat"))) {
             oos.writeObject(cinema);
+            System.out.println("Dados salvos com sucesso.");
         } catch (IOException e) {
+            System.err.println("Erro ao salvar os dados: " + e.getMessage());
             e.printStackTrace();
         }
     }
