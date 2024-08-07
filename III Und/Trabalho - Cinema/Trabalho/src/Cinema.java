@@ -8,10 +8,10 @@ import java.util.Map;
 public class Cinema implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private List<Filme> filmes;
-    private List<Sessao> sessoes;
-    private List<Sala> salas;
-    private List<Ingresso> ingressos;
+    private final List<Filme> filmes;
+    private final List<Sessao> sessoes;
+    private final List<Sala> salas;
+    private final List<Ingresso> ingressos;
 
     public Cinema() {
         this.filmes = new ArrayList<>();
@@ -132,8 +132,8 @@ public class Cinema implements Serializable {
 
     public Sessao buscarSessaoPorFilme(String titulo) {
         for (Sessao sessao : sessoes) {
-            if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
-                return sessao;
+                if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
+                    return sessao;
             }
         }
         return null;

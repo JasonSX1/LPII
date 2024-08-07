@@ -16,7 +16,7 @@ public class Sessao implements Serializable {
     private int ingressosVendidos;
     private final Map<String, Double> ingressosVendidosPorTipo = new HashMap<>();
     Scanner scanner = new Scanner(System.in);
-    public Cinema cinema = new Cinema();	
+    public Cinema cinema = new Cinema();
 
     public Sessao(Filme filme, Sala sala, LocalTime horario, boolean em3D, double valorEntradaBase) {
         this.filme = filme;
@@ -54,22 +54,23 @@ public class Sessao implements Serializable {
     public Map<String, Double> getIngressosVendidosPorTipo() {
         return ingressosVendidosPorTipo;
     }
+
     public void venderIngresso(Filme filme, boolean meiaEntrada) {
         Double valorEntrada = valorEntradaBase;
         if (em3D) {
             valorEntrada *= 1.25;
             if (meiaEntrada) {
                 valorEntrada *= 0.5;
-                ingressosVendidosPorTipo.merge("3D meia entrada", valorEntrada, Double::sum);
+                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
             } else {
-                ingressosVendidosPorTipo.merge("3D", valorEntrada, Double::sum);
+                ingressosVendidosPorTipo.put("3D meia entrada", valorEntrada);
             }
         }else{
             if (meiaEntrada) {
                 valorEntrada *= 0.5;
-                ingressosVendidosPorTipo.merge("meia entrada",valorEntrada, Double::sum);
+                ingressosVendidosPorTipo.put("meia entrada",valorEntrada );
             } else {
-                ingressosVendidosPorTipo.merge("inteira", valorEntrada, Double::sum);
+                ingressosVendidosPorTipo.put("inteira", valorEntrada );
             }
         }
         this.ingressosVendidos++;

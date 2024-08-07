@@ -75,7 +75,7 @@ public class GerenciamentoCinema {
                     consultarTaxaOcupacao();
                     break;
                 case 10:
-                    cinema.calcularFaturamento();
+                    consultarFaturamento();
                     break;
                 case 11:
                     salvarDados();
@@ -163,13 +163,32 @@ public class GerenciamentoCinema {
         String em3DStr = scanner.nextLine();
         boolean em3D = em3DStr.equalsIgnoreCase("sim");
 
-        Sessao sessao = new Sessao(filme, sala, horario, em3D, 20.0); // Valor do ingresso base fixo como exemplo
-        if (sala.adicionarHorario(horario)) {
+        double preco = 20.0; // Definir um preço base, por exemplo
+
+        Sessao sessao = new Sessao(filme, sala, horario, em3D, preco); // Valor do ingresso base fixo como exemplo
+
+        // Verificar se é possível adicionar o horário desejado
+        if (sala.adicionarHorario(filme, horario)) {
             cinema.adicionarSessao(sessao);
+            System.out.println("Sessão adicionada com sucesso.");
         } else {
-            System.out.println(
-                    "Não é possível adicionar a sessão. Não há intervalo mínimo de 20 minutos após a sessão anterior.");
+            // Sugerir o próximo horário disponível
+            LocalTime proximoHorarioDisponivel = calcularProximoHorarioDisponivel(sala, filme);
+            System.out.printf("Não é possível adicionar a sessão no horário desejado. O próximo horário disponível é %s.%n", proximoHorarioDisponivel);
         }
+    }
+
+    private LocalTime calcularProximoHorarioDisponivel(Sala sala, Filme filme) {
+        LocalTime proximoHorarioDisponivel = LocalTime.MIN;
+
+        for (LocalTime h : sala.getHorarios()) {
+            LocalTime fimExistente = h.plusMinutes(filme.getDuracao() + 20); // Duração do filme + 20 minutos
+            if (fimExistente.isAfter(proximoHorarioDisponivel)) {
+                proximoHorarioDisponivel = fimExistente;
+            }
+        }
+
+        return proximoHorarioDisponivel;
     }
 
     private void removerSessao() {
@@ -212,8 +231,8 @@ public class GerenciamentoCinema {
         String titulo = scanner.nextLine();
         List<Sessao> sessoesDoFilme = new ArrayList<>();
         for (Sessao sessao : cinema.getSessoes()) {
-            if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
-                sessoesDoFilme.add(sessao);
+                if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
+                    sessoesDoFilme.add(sessao);
             }
         }
 
@@ -279,7 +298,11 @@ public class GerenciamentoCinema {
                 } else if (mapaAssentos[i][j]) {
                     System.out.print("[X]");
                 } else {
-                    System.out.print("[" + poltronaNumero + "]");
+                    if (poltronaNumero < 10) {
+                        System.out.print("[0" + poltronaNumero + "]");
+                    } else {
+                        System.out.print("[" + poltronaNumero + "]");
+                    }
                 }
             }
             System.out.println();
@@ -331,6 +354,7 @@ public class GerenciamentoCinema {
         }
     }
     
+
     private void consultarProgramacao() {
         System.out.println("Programação do cinema:");
         for (Sessao sessao : cinema.getSessoes()) {
