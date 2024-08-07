@@ -31,7 +31,7 @@ public class GerenciamentoCinema {
         }
     }
 
-    public void exibirMenu() {
+    public void exibirMenu() throws Exception {
         while (true) {
             System.out.println("1. Cadastrar Filme");
             System.out.println("2. Cadastrar Sala");
@@ -134,7 +134,7 @@ public class GerenciamentoCinema {
         cinema.adicionarSala(sala);
     }
 
-private void adicionarSessao() {
+    private void adicionarSessao() { 
     System.out.println("Título do filme:");
     String titulo = scanner.nextLine();
     Filme filme = cinema.buscarFilmePorTitulo(titulo);
@@ -168,19 +168,43 @@ private void adicionarSessao() {
     }
 }
 
-
-    private void removerSessao() {
-        System.out.println("Título do filme:");
-        String titulo = scanner.nextLine();
-        Sessao sessaoParaRemover = cinema.buscarSessaoPorFilme(titulo);
-        if (sessaoParaRemover != null) {
-            cinema.removerSessao(sessaoParaRemover);
-        } else {
-            System.out.println("Sessão não encontrada.");
+private void removerSessao() {
+    System.out.println("Título do filme:");
+    String titulo = scanner.nextLine();
+    List<Sessao> sessoesDoFilme = new ArrayList<>();
+    for (Sessao sessao : cinema.getSessoes()) {
+        if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
+            sessoesDoFilme.add(sessao);
         }
     }
 
-    private void venderIngresso() {
+    if (sessoesDoFilme.isEmpty()) {
+        System.out.println("Filme não encontrado.");
+        return;
+    }
+
+    System.out.println("Sessões disponíveis:");
+    for (int i = 0; i < sessoesDoFilme.size(); i++) {
+        Sessao sessao = sessoesDoFilme.get(i);
+        System.out.println((i + 1) + ". " + sessao.getHorario());
+    }
+
+    System.out.println("Escolha uma sessão para remover (número):");
+    int escolhaSessao = scanner.nextInt() - 1;
+    scanner.nextLine(); // Consome a nova linha
+
+    if (escolhaSessao < 0 || escolhaSessao >= sessoesDoFilme.size()) {
+        System.out.println("Escolha inválida.");
+        return;
+    }
+
+    Sessao sessaoParaRemover = sessoesDoFilme.get(escolhaSessao);
+    cinema.removerSessao(sessaoParaRemover);
+    System.out.println("Sessão removida com sucesso.");
+}
+
+
+    private void venderIngresso() throws Exception {
         System.out.println("Título do filme:");
         String titulo = scanner.nextLine();
         List<Sessao> sessoesDoFilme = new ArrayList<>();
@@ -234,7 +258,7 @@ private void adicionarSessao() {
         int capacidade = sala.getCapacidade();
         int sqrt = (int) Math.ceil(Math.sqrt(capacidade));
         boolean[][] mapaAssentos = new boolean[sqrt][sqrt];
-
+    
         for (Ingresso ingresso : cinema.getIngressos()) {
             if (ingresso.getSessao().getSala().equals(sala)) {
                 int numeroPoltrona = ingresso.getNumeroPoltrona() - 1;
@@ -243,14 +267,13 @@ private void adicionarSessao() {
                 mapaAssentos[row][col] = true;
             }
         }
-
+    
         for (int i = 0; i < sqrt; i++) {
             for (int j = 0; j < sqrt; j++) {
                 int poltronaNumero = i * sqrt + j + 1;
                 if (poltronaNumero > capacidade) {
-                    break;
-                }
-                if (mapaAssentos[i][j]) {
+                    System.out.print("    ");  // Adicionando espaços extras para melhor alinhamento
+                } else if (mapaAssentos[i][j]) {
                     System.out.print("[X]");
                 } else {
                     System.out.print("[" + poltronaNumero + "]");
@@ -259,7 +282,9 @@ private void adicionarSessao() {
             System.out.println();
         }
     }
-
+    
+    
+    
     private void cancelarIngresso() {
         System.out.println("Título do filme:");
         String titulo = scanner.nextLine();
@@ -291,32 +316,82 @@ private void adicionarSessao() {
     }
 
     private void consultarDisponibilidadePoltronas() {
-        System.out.println("Título do filme:");
-        String titulo = scanner.nextLine();
-        Sessao sessaoParaConsultar = cinema.buscarSessaoPorFilme(titulo);
-        if (sessaoParaConsultar != null) {
-            int capacidade = sessaoParaConsultar.getSala().getCapacidade();
-            int vendidos = cinema.calcularIngressosVendidos(sessaoParaConsultar);
-            int disponiveis = capacidade - vendidos;
-            System.out.println("Ingressos disponíveis: " + disponiveis);
-        } else {
-            System.out.println("Sessão não encontrada.");
+    System.out.println("Título do filme:");
+    String titulo = scanner.nextLine();
+    List<Sessao> sessoesDoFilme = new ArrayList<>();
+    for (Sessao sessao : cinema.getSessoes()) {
+        if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
+            sessoesDoFilme.add(sessao);
         }
     }
 
-    private void consultarTaxaOcupacao() {
-        System.out.println("Título do filme:");
-        String titulo = scanner.nextLine();
-        Sessao sessaoParaConsultar = cinema.buscarSessaoPorFilme(titulo);
-        if (sessaoParaConsultar != null) {
-            int capacidade = sessaoParaConsultar.getSala().getCapacidade();
-            int vendidos = cinema.calcularIngressosVendidos(sessaoParaConsultar);
-            double taxaOcupacao = (double) vendidos / capacidade * 100;
-            System.out.println("Taxa de ocupação: " + taxaOcupacao + "%");
-        } else {
-            System.out.println("Sessão não encontrada.");
+    if (sessoesDoFilme.isEmpty()) {
+        System.out.println("Filme não encontrado.");
+        return;
+    }
+
+    System.out.println("Sessões disponíveis:");
+    for (int i = 0; i < sessoesDoFilme.size(); i++) {
+        Sessao sessao = sessoesDoFilme.get(i);
+        System.out.println((i + 1) + ". " + sessao.getHorario());
+    }
+
+    System.out.println("Escolha uma sessão (número):");
+    int escolhaSessao = scanner.nextInt() - 1;
+    scanner.nextLine(); // Consome a nova linha
+
+    if (escolhaSessao < 0 || escolhaSessao >= sessoesDoFilme.size()) {
+        System.out.println("Escolha inválida.");
+        return;
+    }
+
+    Sessao sessaoEscolhida = sessoesDoFilme.get(escolhaSessao);
+    Sala sala = sessaoEscolhida.getSala();
+
+    int capacidade = sala.getCapacidade();
+    int vendidos = cinema.calcularIngressosVendidos(sessaoEscolhida);
+    int disponiveis = capacidade - vendidos;
+    System.out.println("Ingressos disponíveis: " + disponiveis);
+
+    imprimirMapaAssentos(sala);
+}
+
+
+private void consultarTaxaOcupacao() {
+    System.out.println("Título do filme:");
+    String titulo = scanner.nextLine();
+    List<Sessao> sessoesDoFilme = new ArrayList<>();
+    for (Sessao sessao : cinema.getSessoes()) {
+        if (sessao.getFilme().getTitulo().equalsIgnoreCase(titulo)) {
+            sessoesDoFilme.add(sessao);
         }
     }
+
+    if (sessoesDoFilme.isEmpty()) {
+        System.out.println("Filme não encontrado.");
+        return;
+    }
+
+    System.out.println("Sessões disponíveis:");
+    for (int i = 0; i < sessoesDoFilme.size(); i++) {
+        Sessao sessao = sessoesDoFilme.get(i);
+        System.out.println((i + 1) + ". " + sessao.getHorario());
+    }
+
+    System.out.println("Escolha uma sessão (número):");
+    int escolhaSessao = scanner.nextInt() - 1;
+    scanner.nextLine(); // Consome a nova linha
+
+    if (escolhaSessao < 0 || escolhaSessao >= sessoesDoFilme.size()) {
+        System.out.println("Escolha inválida.");
+        return;
+    }
+
+    Sessao sessaoEscolhida = sessoesDoFilme.get(escolhaSessao);
+    double taxaOcupacao = cinema.calcularTaxaOcupacao(sessaoEscolhida);
+    System.out.println("Taxa de ocupação: " + taxaOcupacao + "%");
+}
+
 
     private void consultarFaturamento() {
         System.out.println("Faturamento total:");
@@ -324,7 +399,7 @@ private void adicionarSessao() {
         System.out.println("R$ " + faturamento);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         GerenciamentoCinema gerenciamento = new GerenciamentoCinema();
         gerenciamento.carregarDados();
         gerenciamento.exibirMenu();
