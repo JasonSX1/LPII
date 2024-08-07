@@ -75,7 +75,7 @@ public class GerenciamentoCinema {
                     consultarTaxaOcupacao();
                     break;
                 case 10:
-                    consultarFaturamento();
+                    cinema.calcularFaturamento();
                     break;
                 case 11:
                     salvarDados();
