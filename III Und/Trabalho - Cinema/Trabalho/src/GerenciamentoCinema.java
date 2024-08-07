@@ -134,7 +134,12 @@ public class GerenciamentoCinema {
     }
 
     private void adicionarSessao() {
-        System.out.println("Título do filme:");
+        List<Filme> filmes = cinema.getFilmes();
+        System.out.println("Filmes cadastrados:");
+        for (Filme filme : filmes) {
+            System.out.println(filme.getTitulo());
+        }
+        System.out.println("Selecione um filme:");
         String titulo = scanner.nextLine();
         Filme filme = cinema.buscarFilmePorTitulo(titulo);
         if (filme == null) {
@@ -146,7 +151,7 @@ public class GerenciamentoCinema {
         for (Sala sala : salas) {
             System.out.println(sala.getNumero());
         }
-        System.out.println("Número da sala:");
+        System.out.println("Selecione uma sala::");
         int numeroSala = scanner.nextInt();
         scanner.nextLine();
         Sala sala = cinema.buscarSalaPorId(numeroSala);
@@ -161,7 +166,7 @@ public class GerenciamentoCinema {
 
         System.out.println("Reprodução em 3D? (sim/não):");
         String em3DStr = scanner.nextLine();
-        boolean em3D = em3DStr.equalsIgnoreCase("sim");
+        boolean em3D = em3DStr.equalsIgnoreCase("sim")||em3DStr.equalsIgnoreCase("s");
 
         double preco = 20.0; // Definir um preço base, por exemplo
 
