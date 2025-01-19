@@ -37,13 +37,11 @@ public class Sessao implements Serializable {
     public Sala getSala() {
         return sala;
     }
+        return valorEntradaBase;
+    }
 
     public boolean isEm3D() {
         return em3D;
-    }
-
-    public double getValorEntradaBase() {
-        return valorEntradaBase;
     }
 
     public int getIngressosVendidos() {
